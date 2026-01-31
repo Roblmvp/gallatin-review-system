@@ -7,9 +7,11 @@ import { supabaseServer } from "@/lib/supabase";
 // Dealership info
 const DEALERSHIP = {
   name: "Gallatin CDJR",
-  address: "1550 Nashville Pike, Gallatin, TN 37066",
+  address: "1290 Nashville Pike, Gallatin, TN 37066",
   website: "https://www.gallatincdjr.com",
-  salesHours: "Mon-Sat 9AM-8PM, Sun Closed", // UPDATE WITH ACTUAL HOURS
+  salesHours: "Mon-Sat 9:00AM-8:00PM",
+  servicePhone: "629-263-6161",
+  serviceHours: "Mon-Fri 7:30AM-6:00PM",
 };
 
 export async function GET(
@@ -108,10 +110,10 @@ function generateServiceVCard() {
     "FN:Gallatin CDJR Service",
     "ORG:Gallatin CDJR",
     "TITLE:Service Department",
-    "TEL;TYPE=WORK:615-000-0000", // UPDATE WITH ACTUAL SERVICE NUMBER
-    "ADR;TYPE=WORK:;;1550 Nashville Pike;Gallatin;TN;37066;USA",
-    "URL:https://www.gallatincdjr.com/service/", // UPDATE WITH ACTUAL URL
-    "NOTE:Service Hours: Mon-Fri 7AM-6PM\\, Sat 8AM-3PM", // UPDATE WITH ACTUAL HOURS
+    "TEL;TYPE=WORK:629-263-6161",
+    "ADR;TYPE=WORK:;;1290 Nashville Pike;Gallatin;TN;37066;USA",
+    "URL:https://www.gallatincdjr.com/scheduleservice",
+    "NOTE:Service Hours: Mon-Fri 7:30AM-6:00PM",
     "END:VCARD",
   ].join("\r\n");
 
@@ -133,9 +135,9 @@ function generateAccessoriesVCard() {
     "TITLE:Accessories Manager",
     "TEL;TYPE=CELL:615-626-1274",
     "EMAIL:wesley.u@gallatincdjr.com",
-    "ADR;TYPE=WORK:;;1550 Nashville Pike;Gallatin;TN;37066;USA",
+    "ADR;TYPE=WORK:;;1290 Nashville Pike;Gallatin;TN;37066;USA",
     "URL:https://www.gallatincdjr.com",
-    "NOTE:Customize your ride! Contact Wesley for accessories and upgrades.",
+    "NOTE:Customize your ride! Contact Wesley for accessories and upgrades. Sales Hours: Mon-Sat 9:00AM-8:00PM",
     "END:VCARD",
   ].join("\r\n");
 
