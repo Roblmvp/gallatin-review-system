@@ -16,10 +16,19 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-async function checkAuth(): Promise<boolean> {
+async function checkAuth(): Promise<{ authenticated: boolean; userName?: string }> {
   const cookieStore = await cookies();
   const session = cookieStore.get("admin_session");
-  return !!session?.value;
+  
+  if (session?.value) {
+    try {
+      const sessionData = JSON.parse(Buffer.from(session.value, "base64").toString());
+      return { authenticated: true, userName: sessionData.name };
+    } catch {
+      return { authenticated: false };
+    }
+  }
+  return { authenticated: false };
 }
 
 async function getScoreboardData() {
@@ -51,7 +60,7 @@ async function getRecentEvents() {
 }
 
 export default async function AdminPage() {
-  const isAuthenticated = await checkAuth();
+  const authResult = await checkAuth();
 
   const [scoreboard, referrals, recentEvents, salespersonRankings, trackingStats] = await Promise.all([
     getScoreboardData(),
@@ -95,7 +104,8 @@ export default async function AdminPage() {
       totals={totals}
       salespersonRankings={salespersonRankings}
       trackingStats={trackingStats}
-      isAuthenticated={isAuthenticated}
+      isAuthenticated={authResult.authenticated}
+      userName={authResult.userName}
     />
   );
 }
