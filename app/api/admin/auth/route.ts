@@ -41,7 +41,7 @@ async function sendPasswordResetEmail(userEmail: string, userName: string) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Gallatin CDJR Admin <onboarding@resend.dev>",
+        from: "Gallatin CDJR Admin <admin@gallatincdjr.reviews>",
         to: [ADMIN_NOTIFICATION_EMAIL],
         subject: `🔐 Password Reset Request - ${userName}`,
         html: `
