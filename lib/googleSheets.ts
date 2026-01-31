@@ -95,19 +95,33 @@ export async function fetchDeliveryStats(): Promise<DeliveryStats> {
   };
 
   try {
-    const url = `https://docs.google.com/spreadsheets/d/${DELIVERY_LOG_SPREADSHEET_ID}/export?format=csv`;
+    // Get today's date and format it to match sheet tab names like "Thursday January 1st"
+    const today = new Date();
+    const sheetName = formatDateForSheetName(today);
     
-    const response = await fetch(url, { 
+    const url = `https://docs.google.com/spreadsheets/d/${DELIVERY_LOG_SPREADSHEET_ID}/export?format=csv&gid=0`;
+    
+    // First, try to get today's specific sheet
+    const todayUrl = `https://docs.google.com/spreadsheets/d/${DELIVERY_LOG_SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
+    
+    const response = await fetch(todayUrl, { 
       next: { revalidate: 60 }, // Cache for 1 minute for more frequent updates
       redirect: 'follow'
     });
     
     if (!response.ok) {
-      console.error("Failed to fetch Delivery Log:", response.statusText);
+      console.error("Failed to fetch Delivery Log for today:", response.statusText);
       return defaultStats;
     }
     
     const csvText = await response.text();
+    
+    // Check if we got an error page (sheet not found)
+    if (csvText.includes("<!DOCTYPE html>") || csvText.includes("<HTML>")) {
+      console.error("Today's sheet not found:", sheetName);
+      return defaultStats;
+    }
+    
     const lines = csvText.split('\n');
     
     let todaysDeliveries = 0;
@@ -139,7 +153,6 @@ export async function fetchDeliveryStats(): Promise<DeliveryStats> {
       }
       
       // Count deals (rows that have customer names and deal numbers)
-      // Deal rows typically have format with deal info starting around column 14
       const columns = parseCSVLine(line);
       
       // Check if this is a deal row (has customer name in expected position and deal number)
@@ -182,6 +195,27 @@ export async function fetchDeliveryStats(): Promise<DeliveryStats> {
     console.error("Error fetching Delivery Log:", error);
     return defaultStats;
   }
+}
+
+// Format date to match sheet tab names like "Thursday January 1st", "Friday January 2nd"
+function formatDateForSheetName(date: Date): string {
+  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  
+  const dayName = days[date.getDay()];
+  const monthName = months[date.getMonth()];
+  const dayNum = date.getDate();
+  
+  // Add ordinal suffix (1st, 2nd, 3rd, etc.)
+  const ordinal = getOrdinalSuffix(dayNum);
+  
+  return `${dayName} ${monthName} ${dayNum}${ordinal}`;
+}
+
+function getOrdinalSuffix(n: number): string {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return s[(v - 20) % 10] || s[v] || s[0];
 }
 
 // Helper function to parse CSV line handling quoted values
