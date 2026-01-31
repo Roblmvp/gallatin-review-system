@@ -24,35 +24,39 @@ export type DeliveryStats = {
     vehicle: string;
     newUsed: string;
   }>;
-  // MTD from Tracking Sheet
-  mtdNewUnits: number;
-  mtdUsedUnits: number;
-  mtdTotalUnits: number;
-  mtdTotalGross: string;
-  // Objectives
-  newUnitObjective: number;
-  usedUnitObjective: number;
-  totalUnitObjective: number;
-  grossObjective: string;
-  // Pacing
-  newUnitPacing: number;
-  usedUnitPacing: number;
-  totalUnitPacing: number;
-  // Activity
-  mtdCalls: number;
-  mtdEmails: number;
-  mtdTexts: number;
-  mtdVideos: number;
-  mtdTotalActivity: number;
-  // Leads
-  mtdInternetLeads: number;
-  mtdPhoneLeads: number;
-  mtdWalkIns: number;
-  mtdCampaign: number;
-  mtdTotalLeads: number;
   // Days
   daysWorked: number;
   totalWorkingDays: number;
+  // Volume Objectives
+  newUnitObjective: number;
+  usedUnitObjective: number;
+  totalUnitObjective: number;
+  // Gross Objectives
+  newGrossObjective: string;
+  usedGrossObjective: string;
+  totalGrossObjective: string;
+  // MTD Units
+  mtdNewUnits: number;
+  mtdUsedUnits: number;
+  mtdTotalUnits: number;
+  // MTD Gross
+  mtdNewGross: string;
+  mtdUsedGross: string;
+  mtdTotalGross: string;
+  // Pacing Units
+  newUnitPacing: number;
+  usedUnitPacing: number;
+  totalUnitPacing: number;
+  // Pacing Gross
+  newGrossPacing: string;
+  usedGrossPacing: string;
+  totalGrossPacing: string;
+  // Daily Activity Averages
+  dailyCalls: number;
+  dailyEmails: number;
+  dailyTexts: number;
+  dailyVideos: number;
+  dailyTotalActivity: number;
 };
 
 export async function fetchSalespersonRankings(): Promise<SalespersonRanking[]> {
@@ -113,29 +117,31 @@ export async function fetchDeliveryStats(): Promise<DeliveryStats> {
   const defaultStats: DeliveryStats = {
     todaysDeliveries: 0,
     todaysDeals: [],
+    daysWorked: 0,
+    totalWorkingDays: 0,
+    newUnitObjective: 50,
+    usedUnitObjective: 80,
+    totalUnitObjective: 130,
+    newGrossObjective: "$75,000",
+    usedGrossObjective: "$200,000",
+    totalGrossObjective: "$275,000",
     mtdNewUnits: 0,
     mtdUsedUnits: 0,
     mtdTotalUnits: 0,
+    mtdNewGross: "$0",
+    mtdUsedGross: "$0",
     mtdTotalGross: "$0",
-    newUnitObjective: 0,
-    usedUnitObjective: 0,
-    totalUnitObjective: 0,
-    grossObjective: "$0",
     newUnitPacing: 0,
     usedUnitPacing: 0,
     totalUnitPacing: 0,
-    mtdCalls: 0,
-    mtdEmails: 0,
-    mtdTexts: 0,
-    mtdVideos: 0,
-    mtdTotalActivity: 0,
-    mtdInternetLeads: 0,
-    mtdPhoneLeads: 0,
-    mtdWalkIns: 0,
-    mtdCampaign: 0,
-    mtdTotalLeads: 0,
-    daysWorked: 0,
-    totalWorkingDays: 0,
+    newGrossPacing: "$0",
+    usedGrossPacing: "$0",
+    totalGrossPacing: "$0",
+    dailyCalls: 0,
+    dailyEmails: 0,
+    dailyTexts: 0,
+    dailyVideos: 0,
+    dailyTotalActivity: 0,
   };
 
   try {
@@ -186,144 +192,107 @@ export async function fetchDeliveryStats(): Promise<DeliveryStats> {
     // Start with today's deliveries
     const stats = { ...defaultStats, todaysDeliveries, todaysDeals };
     
-    // Parse tracking sheet for MTD stats
+    // Parse tracking sheet by row positions
+    // Based on the CSV structure:
+    // Row 0: Title
+    // Row 1: Days Worked (col 2 = value)
+    // Row 2: Total Working Days (col 2 = value)
+    // Row 3: Unit Objective / Tracking header
+    // Row 4: Column headers (Sold Pacing, Gross Objective)
+    // Row 5: Used Car - col 2=objective(80), col 3=pacing, col 5=gross obj, col 6=gross pacing
+    // Row 6: New Car - col 2=objective(50), col 3=pacing, col 5=gross obj, col 6=gross pacing
+    // Row 7: Total Units - col 2=objective(130), col 3=pacing, col 5=gross obj, col 6=gross pacing
+    // Row 8: New Cars / Used Cars / Store Total headers
+    // Row 9: Total Units MTD - col 2=new(33), col 4=used(60), col 6=total(93)
+    // Row 10: Total Front Gross MTD
+    // Row 11: Total Back Gross MTD
+    // Row 12: Total Gross MTD - col 2=new gross, col 4=used gross, col 6=total gross
+    // Row 13: Total Units Pacing - col 2=new, col 4=used, col 6=total
+    // Row 14: Total Front Gross Pacing
+    // Row 15: Total Back Gross Pacing
+    // Row 16: Total Gross Pacing - col 2=new, col 4=used, col 6=total
+    // Row 17: ACTIVITY TRACKING header
+    // Row 18: MTD Activity / MTD LEADS headers
+    // Row 19: Phone Calls/Internet - col 6=Calls Per Day value
+    // Row 20: Emails Sent/Phone - col 6=Emails Per Day value
+    // Row 21: Texts/Walk Ins - col 6=Texts Per Day value
+    // Row 22: Videos/Campaign - col 6=Videos Per Day value
+    // Row 23: Total - col 6=Total Activity Per Day value
+    
     if (trackingData && !trackingData.includes("<!DOCTYPE html>")) {
       const lines = trackingData.split('\n');
+      const rows: string[][] = lines.map(line => parseCSVLine(line));
       
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        const columns = parseCSVLine(line);
-        const lineJoined = columns.join('|').toLowerCase();
-        
-        // Days Worked
-        if (lineJoined.includes("days worked")) {
-          const num = findNumberInColumns(columns, 1);
-          if (num > 0 && num < 32) stats.daysWorked = num;
-        }
-        
-        // Total Working Days
-        if (lineJoined.includes("total working days")) {
-          const num = findNumberInColumns(columns, 1);
-          if (num > 0 && num < 32) stats.totalWorkingDays = num;
-        }
-        
-        // Unit Objectives - look for rows with objective values
-        if (lineJoined.includes("used car") && !lineJoined.includes("gross") && !lineJoined.includes("pvr")) {
-          const nums = findAllNumbersInColumns(columns);
-          if (nums.length >= 2) {
-            stats.usedUnitObjective = nums[0] || 80;
-            stats.usedUnitPacing = nums[1] || 0;
-          }
-        }
-        if (lineJoined.includes("new car") && !lineJoined.includes("gross") && !lineJoined.includes("pvr")) {
-          const nums = findAllNumbersInColumns(columns);
-          if (nums.length >= 2) {
-            stats.newUnitObjective = nums[0] || 50;
-            stats.newUnitPacing = nums[1] || 0;
-          }
-        }
-        if (lineJoined.includes("total units") && !lineJoined.includes("mtd")) {
-          const nums = findAllNumbersInColumns(columns);
-          if (nums.length >= 2) {
-            stats.totalUnitObjective = nums[0] || 130;
-            stats.totalUnitPacing = nums[1] || 0;
-          }
-        }
-        
-        // MTD Units from Store Total section
-        if (lineJoined.includes("total units mtd") && columns.some(c => c.toLowerCase().includes("store"))) {
-          const num = findNumberInColumns(columns, 1);
-          if (num > 0) stats.mtdTotalUnits = num;
-        }
-        
-        // New Cars MTD
-        if (i > 0 && lines[i-1] && parseCSVLine(lines[i-1]).join('|').toLowerCase().includes("new cars")) {
-          if (lineJoined.includes("total units mtd")) {
-            const num = findNumberInColumns(columns, 1);
-            if (num > 0 && num < 200) stats.mtdNewUnits = num;
-          }
-        }
-        
-        // Used Cars MTD
-        if (i > 0 && lines[i-1] && parseCSVLine(lines[i-1]).join('|').toLowerCase().includes("used cars")) {
-          if (lineJoined.includes("total units mtd")) {
-            const num = findNumberInColumns(columns, 1);
-            if (num > 0 && num < 200) stats.mtdUsedUnits = num;
-          }
-        }
-        
-        // Total Gross MTD (store total)
-        if (lineJoined.includes("total gross mtd") && !lineJoined.includes("front") && !lineJoined.includes("back")) {
-          const currency = findCurrencyInColumns(columns);
-          if (currency) stats.mtdTotalGross = currency;
-        }
-        
-        // Gross Objective
-        if (lineJoined.includes("total gross") && lineJoined.includes("objective")) {
-          const currency = findCurrencyInColumns(columns);
-          if (currency) stats.grossObjective = currency;
-        }
-        
-        // Activity Tracking - MTD Activity section
-        if (lineJoined.includes("phone calls") && !lineJoined.includes("per day")) {
-          const num = findNumberInColumns(columns, 1);
-          if (num > 1000) stats.mtdCalls = num;
-        }
-        if (lineJoined.includes("emails sent") && !lineJoined.includes("per day")) {
-          const num = findNumberInColumns(columns, 1);
-          if (num > 1000) stats.mtdEmails = num;
-        }
-        if ((lineJoined.includes("texts") || lineJoined.match(/\btexts?\b/)) && !lineJoined.includes("per day")) {
-          const num = findNumberInColumns(columns, 1);
-          if (num > 1000) stats.mtdTexts = num;
-        }
-        if (lineJoined.includes("videos") && !lineJoined.includes("per day")) {
-          const num = findNumberInColumns(columns, 1);
-          if (num > 100) stats.mtdVideos = num;
-        }
-        
-        // Total Activity (row that just says "Total" with a big number)
-        if ((columns[0]?.trim().toLowerCase() === "total" || columns[1]?.trim().toLowerCase() === "total") && 
-            !lineJoined.includes("units") && !lineJoined.includes("gross")) {
-          const num = findNumberInColumns(columns, 1);
-          if (num > 20000) stats.mtdTotalActivity = num;
-        }
-        
-        // Lead Tracking - MTD Leads section
-        if (lineJoined.includes("internet") && !lineJoined.includes("closing") && !lineJoined.includes("report") && !lineJoined.includes("apts")) {
-          const num = findNumberInColumns(columns, 1);
-          if (num > 100 && num < 1000) stats.mtdInternetLeads = num;
-        }
-        if (lineJoined.match(/\bphone\b/) && !lineJoined.includes("calls")) {
-          const num = findNumberInColumns(columns, 1);
-          if (num > 50 && num < 500) stats.mtdPhoneLeads = num;
-        }
-        if (lineJoined.includes("walk in")) {
-          const num = findNumberInColumns(columns, 1);
-          if (num > 10 && num < 200) stats.mtdWalkIns = num;
-        }
-        if (lineJoined.includes("campaign")) {
-          const num = findNumberInColumns(columns, 1);
-          if (num > 50 && num < 500) stats.mtdCampaign = num;
-        }
+      // Days Worked (Row 1, Col C = index 2)
+      if (rows[1]) {
+        stats.daysWorked = parseNumber(rows[1][2]) || 0;
       }
       
-      // Set calculated values if not found directly
-      if (stats.mtdTotalUnits === 0 && (stats.mtdNewUnits > 0 || stats.mtdUsedUnits > 0)) {
-        stats.mtdTotalUnits = stats.mtdNewUnits + stats.mtdUsedUnits;
-      }
-      if (stats.mtdTotalActivity === 0) {
-        stats.mtdTotalActivity = stats.mtdCalls + stats.mtdEmails + stats.mtdTexts + stats.mtdVideos;
-      }
-      if (stats.mtdTotalLeads === 0) {
-        stats.mtdTotalLeads = stats.mtdInternetLeads + stats.mtdPhoneLeads + stats.mtdWalkIns + stats.mtdCampaign;
+      // Total Working Days (Row 2, Col C = index 2)
+      if (rows[2]) {
+        stats.totalWorkingDays = parseNumber(rows[2][2]) || 0;
       }
       
-      // Set default objectives if not found
-      if (stats.usedUnitObjective === 0) stats.usedUnitObjective = 80;
-      if (stats.newUnitObjective === 0) stats.newUnitObjective = 50;
-      if (stats.totalUnitObjective === 0) stats.totalUnitObjective = 130;
-      if (stats.grossObjective === "$0") stats.grossObjective = "$275,000";
+      // Row 5: Used Car objectives (C27 in sheet = row index 5 in 0-based after header adjustments)
+      // Row 6: New Car objectives (C28 in sheet)
+      // Row 7: Total Units objectives (C29 in sheet)
+      if (rows[5]) {
+        stats.usedUnitObjective = parseNumber(rows[5][2]) || 80;
+        stats.usedGrossObjective = parseCurrency(rows[5][5]) || "$200,000";
+      }
+      if (rows[6]) {
+        stats.newUnitObjective = parseNumber(rows[6][2]) || 50;
+        stats.newGrossObjective = parseCurrency(rows[6][5]) || "$75,000";
+      }
+      if (rows[7]) {
+        stats.totalUnitObjective = parseNumber(rows[7][2]) || 130;
+        stats.totalGrossObjective = parseCurrency(rows[7][5]) || "$275,000";
+      }
+      
+      // Row 9: Total Units MTD (C33, E33, G33 = cols 2, 4, 6)
+      if (rows[9]) {
+        stats.mtdNewUnits = parseNumber(rows[9][2]) || 0;
+        stats.mtdUsedUnits = parseNumber(rows[9][4]) || 0;
+        stats.mtdTotalUnits = parseNumber(rows[9][6]) || 0;
+      }
+      
+      // Row 12: Total Gross MTD (C36, E36, G36 = cols 2, 4, 6)
+      if (rows[12]) {
+        stats.mtdNewGross = parseCurrency(rows[12][2]) || "$0";
+        stats.mtdUsedGross = parseCurrency(rows[12][4]) || "$0";
+        stats.mtdTotalGross = parseCurrency(rows[12][6]) || "$0";
+      }
+      
+      // Row 13: Total Units Pacing (C37, E37, G37 = cols 2, 4, 6)
+      if (rows[13]) {
+        stats.newUnitPacing = parseNumber(rows[13][2]) || 0;
+        stats.usedUnitPacing = parseNumber(rows[13][4]) || 0;
+        stats.totalUnitPacing = parseNumber(rows[13][6]) || 0;
+      }
+      
+      // Row 16: Total Gross Pacing (C40, E40, G40 = cols 2, 4, 6)
+      if (rows[16]) {
+        stats.newGrossPacing = parseCurrency(rows[16][2]) || "$0";
+        stats.usedGrossPacing = parseCurrency(rows[16][4]) || "$0";
+        stats.totalGrossPacing = parseCurrency(rows[16][6]) || "$0";
+      }
+      
+      // Daily Activity Averages (G46-G50 = col 6, rows 19-23 in 0-based)
+      if (rows[19]) {
+        stats.dailyCalls = parseNumber(rows[19][6]) || 0;
+      }
+      if (rows[20]) {
+        stats.dailyEmails = parseNumber(rows[20][6]) || 0;
+      }
+      if (rows[21]) {
+        stats.dailyTexts = parseNumber(rows[21][6]) || 0;
+      }
+      if (rows[22]) {
+        stats.dailyVideos = parseNumber(rows[22][6]) || 0;
+      }
+      if (rows[23]) {
+        stats.dailyTotalActivity = parseNumber(rows[23][6]) || 0;
+      }
     }
     
     return stats;
@@ -347,37 +316,26 @@ async function fetchSheetCSV(sheetName: string): Promise<string | null> {
   }
 }
 
-function findNumberInColumns(columns: string[], minIndex: number = 0): number {
-  for (let i = columns.length - 1; i >= minIndex; i--) {
-    const num = parseNumber(columns[i]);
-    if (num > 0) return num;
-  }
-  return 0;
-}
-
-function findAllNumbersInColumns(columns: string[]): number[] {
-  const nums: number[] = [];
-  for (const col of columns) {
-    const num = parseNumber(col);
-    if (num > 0) nums.push(num);
-  }
-  return nums;
-}
-
-function findCurrencyInColumns(columns: string[]): string | null {
-  for (const col of columns) {
-    if (col && col.includes("$")) {
-      return col.replace(/['"]/g, '').trim();
-    }
-  }
-  return null;
-}
-
 function parseNumber(str: string): number {
   if (!str) return 0;
   const cleaned = str.replace(/[$,'"()]/g, '').trim();
   const num = parseFloat(cleaned);
-  return isNaN(num) ? 0 : Math.abs(Math.round(num * 100) / 100);
+  return isNaN(num) ? 0 : Math.abs(Math.round(num));
+}
+
+function parseCurrency(str: string): string {
+  if (!str) return "$0";
+  // Clean up the string
+  const cleaned = str.replace(/['"]/g, '').trim();
+  if (cleaned.includes("$")) {
+    return cleaned;
+  }
+  // If it's just a number, format as currency
+  const num = parseFloat(cleaned.replace(/[,()]/g, ''));
+  if (!isNaN(num)) {
+    return "$" + Math.abs(num).toLocaleString();
+  }
+  return "$0";
 }
 
 // Format date to match sheet tab names like "Friday January 31st"
