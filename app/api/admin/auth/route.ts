@@ -23,7 +23,7 @@ const ADMIN_USERS: Record<string, { name: string; password: string }> = {
 };
 
 // Email to receive password reset requests
-const ADMIN_NOTIFICATION_EMAIL = "rob.l@gallatincdjr.com";
+const ADMIN_NOTIFICATION_EMAIL = "robertlisowski57@gmail.com";
 
 async function sendPasswordResetEmail(userEmail: string, userName: string) {
   const resendApiKey = process.env.RESEND_API_KEY;
