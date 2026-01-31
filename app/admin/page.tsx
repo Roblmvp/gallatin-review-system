@@ -2,7 +2,7 @@
 // Admin dashboard for viewing scoreboard stats
 
 import { supabaseServer } from "@/lib/supabase";
-import { fetchSalespersonRankings } from "@/lib/googleSheets";
+import { fetchSalespersonRankings, fetchDeliveryStats } from "@/lib/googleSheets";
 import { Metadata } from "next";
 import AdminDashboardClient from "./AdminDashboardClient";
 
@@ -44,11 +44,12 @@ async function getRecentEvents() {
 }
 
 export default async function AdminPage() {
-  const [scoreboard, referrals, recentEvents, salespersonRankings] = await Promise.all([
+  const [scoreboard, referrals, recentEvents, salespersonRankings, trackingStats] = await Promise.all([
     getScoreboardData(),
     getReferralData(),
     getRecentEvents(),
     fetchSalespersonRankings(),
+    fetchDeliveryStats(),
   ]);
 
   // Calculate totals
@@ -84,6 +85,7 @@ export default async function AdminPage() {
       recentEvents={recentEvents}
       totals={totals}
       salespersonRankings={salespersonRankings}
+      trackingStats={trackingStats}
     />
   );
 }
