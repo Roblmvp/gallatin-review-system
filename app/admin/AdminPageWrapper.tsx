@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import AdminLoginForm from "./AdminLoginForm";
 import AdminDashboardClient from "./AdminDashboardClient";
 
@@ -12,6 +12,7 @@ type Props = {
   salespersonRankings: any[];
   trackingStats: any;
   isAuthenticated: boolean;
+  userName?: string;
 };
 
 export default function AdminPageWrapper({
@@ -22,39 +23,70 @@ export default function AdminPageWrapper({
   salespersonRankings,
   trackingStats,
   isAuthenticated: initialAuth,
+  userName: initialUserName,
 }: Props) {
   const [isAuthenticated, setIsAuthenticated] = useState(initialAuth);
+  const [userName, setUserName] = useState(initialUserName || "");
   const [error, setError] = useState("");
 
-  const handleLogin = async (password: string) => {
+  const handleLogin = async (email: string, password: string) => {
     setError("");
     
     try {
       const response = await fetch("/api/admin/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
 
       if (data.success) {
         setIsAuthenticated(true);
+        setUserName(data.user?.name || "");
       } else {
-        setError(data.error || "Invalid password");
+        setError(data.error || "Invalid email or password");
       }
     } catch (err) {
       setError("Failed to connect. Please try again.");
     }
   };
 
+  const handleForgotPassword = async (email: string): Promise<{ success: boolean; message: string }> => {
+    try {
+      const response = await fetch("/api/admin/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "forgot_password", email }),
+      });
+
+      const data = await response.json();
+      return { 
+        success: data.success, 
+        message: data.message || "If an account exists, a reset request has been sent." 
+      };
+    } catch (err) {
+      return { 
+        success: false, 
+        message: "Failed to send reset request. Please try again." 
+      };
+    }
+  };
+
   const handleLogout = async () => {
     await fetch("/api/admin/auth", { method: "DELETE" });
     setIsAuthenticated(false);
+    setUserName("");
   };
 
   if (!isAuthenticated) {
-    return <AdminLoginForm onLogin={handleLogin} error={error} />;
+    return (
+      <AdminLoginForm 
+        onLogin={handleLogin} 
+        onForgotPassword={handleForgotPassword}
+        error={error} 
+      />
+    );
   }
 
   return (
@@ -66,6 +98,7 @@ export default function AdminPageWrapper({
       salespersonRankings={salespersonRankings}
       trackingStats={trackingStats}
       onLogout={handleLogout}
+      userName={userName}
     />
   );
 }
