@@ -115,10 +115,10 @@ export default function ReviewPageClient({
         }} />
         
         {/* Logo Row */}
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 24, marginBottom: 24, position: "relative" }}>
-          <img src="/gallatin-cdjr-logo.png" alt="Gallatin CDJR" style={{ height: 50, objectFit: "contain" }} />
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 20, marginBottom: 24, position: "relative" }}>
+          <img src="https://res.cloudinary.com/di5ujiwjp/image/upload/v1769868303/TAA062407W-GallatinLogos-Web-CDJR-2_yn1fwh.png" alt="Gallatin CDJR" style={{ height: 55, objectFit: "contain" }} />
           <div style={{ width: 1, height: 40, backgroundColor: "rgba(255,255,255,0.2)" }} />
-          <img src="/we-auto-logo.png" alt="WE Auto" style={{ height: 44, objectFit: "contain" }} />
+          <img src="https://res.cloudinary.com/di5ujiwjp/image/upload/v1769868289/WE_Auto_Badge_1_f5djzq.png" alt="WE Auto" style={{ height: 50, objectFit: "contain" }} />
         </div>
 
         {/* Welcome Text */}
@@ -389,7 +389,7 @@ export default function ReviewPageClient({
             padding: 20,
             marginBottom: 16
           }}>
-            <img src="/worry-free-logo.png" alt="Worry Free Guarantee" style={{ height: 70, marginBottom: 8 }} />
+            <img src="https://res.cloudinary.com/di5ujiwjp/image/upload/v1769868289/MSG-CDJR_cfgryx.png" alt="Worry Free Guarantee" style={{ height: 80, marginBottom: 8 }} />
             <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, margin: 0 }}>Your purchase is protected.</p>
           </div>
           
