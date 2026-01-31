@@ -43,12 +43,13 @@ export default function RootLayout({
       <head>
         {/* PWA Meta Tags */}
         <link rel="manifest" href="/manifest.json" />
-        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        <link rel="apple-touch-icon" href="https://res.cloudinary.com/di5ujiwjp/image/upload/w_192,h_192,c_fill/v1769874514/Gallatin_CDJR_App_Icon_xt3irp.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Gallatin CDJR" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="msapplication-TileColor" content="#D10000" />
+        <meta name="msapplication-TileImage" content="https://res.cloudinary.com/di5ujiwjp/image/upload/w_192,h_192,c_fill/v1769874514/Gallatin_CDJR_App_Icon_xt3irp.png" />
         <meta name="msapplication-tap-highlight" content="no" />
         
         {/* Preconnect */}
