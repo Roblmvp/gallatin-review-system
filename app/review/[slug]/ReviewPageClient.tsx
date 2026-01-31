@@ -181,7 +181,7 @@ export default function ReviewPageClient({
 
       {/* Secondary CTA - Call/Text */}
       {phone && (
-        <a
+        
           href={`tel:${phone.replace(/[^0-9]/g, "")}`}
           style={{
             display: "block",
@@ -210,6 +210,87 @@ export default function ReviewPageClient({
           marginTop: 10,
         }}
       >
+        {/* Social Media Section */}
+        <p
+          style={{
+            fontSize: 14,
+            fontWeight: 600,
+            color: "#333",
+            marginBottom: 12,
+          }}
+        >
+          Follow us on social media
+        </p>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: 16,
+            marginBottom: 20,
+          }}
+        >
+          
+            href="https://facebook.com/gallatincdjr"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 48,
+              height: 48,
+              borderRadius: 12,
+              backgroundColor: "#1877F2",
+              color: "white",
+              textDecoration: "none",
+              fontSize: 20,
+            }}
+            aria-label="Facebook"
+          >
+            f
+          </a>
+          
+            href="https://instagram.com/gallatincdjr"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 48,
+              height: 48,
+              borderRadius: 12,
+              background: "linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)",
+              color: "white",
+              textDecoration: "none",
+              fontSize: 20,
+            }}
+            aria-label="Instagram"
+          >
+            📷
+          </a>
+          
+            href="https://tiktok.com/@gallatin.cdjr"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: 48,
+              height: 48,
+              borderRadius: 12,
+              backgroundColor: "#000000",
+              color: "white",
+              textDecoration: "none",
+              fontSize: 20,
+            }}
+            aria-label="TikTok"
+          >
+            ♪
+          </a>
+        </div>
+
         <p
           style={{
             fontSize: 12,
