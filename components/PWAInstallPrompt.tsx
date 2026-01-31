@@ -93,15 +93,18 @@ export default function PWAInstallPrompt() {
             width: 50,
             height: 50,
             borderRadius: 12,
-            background: "#D10000",
+            overflow: "hidden",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             flexShrink: 0,
-            fontSize: 24,
           }}
         >
-          🚗
+          <img 
+            src="https://res.cloudinary.com/di5ujiwjp/image/upload/w_100,h_100,c_fill/v1769874514/Gallatin_CDJR_App_Icon_xt3irp.png" 
+            alt="Gallatin CDJR"
+            style={{ width: "100%", height: "100%" }}
+          />
         </div>
         <div style={{ flex: 1 }}>
           <p style={{ fontWeight: 700, fontSize: 16, margin: "0 0 4px 0" }}>
