@@ -2,6 +2,7 @@
 // Admin dashboard for viewing scoreboard stats
 
 import { supabaseServer } from "@/lib/supabase";
+import { fetchSalespersonRankings } from "@/lib/googleSheets";
 import { Metadata } from "next";
 import AdminDashboardClient from "./AdminDashboardClient";
 
@@ -9,6 +10,10 @@ export const metadata: Metadata = {
   title: "Admin Dashboard | Gallatin CDJR",
   robots: { index: false, follow: false },
 };
+
+// Force dynamic rendering to get fresh data
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 async function getScoreboardData() {
   const { data: scoreboard } = await supabaseServer
@@ -39,10 +44,11 @@ async function getRecentEvents() {
 }
 
 export default async function AdminPage() {
-  const [scoreboard, referrals, recentEvents] = await Promise.all([
+  const [scoreboard, referrals, recentEvents, salespersonRankings] = await Promise.all([
     getScoreboardData(),
     getReferralData(),
     getRecentEvents(),
+    fetchSalespersonRankings(),
   ]);
 
   // Calculate totals
@@ -77,6 +83,7 @@ export default async function AdminPage() {
       referrals={referrals}
       recentEvents={recentEvents}
       totals={totals}
+      salespersonRankings={salespersonRankings}
     />
   );
 }
