@@ -56,12 +56,48 @@ type SalespersonRanking = {
   rank: number;
 };
 
+type TrackingStats = {
+  todaysDeliveries: number;
+  todaysDeals: Array<{
+    customerName: string;
+    salesperson: string;
+    vehicle: string;
+    newUsed: string;
+  }>;
+  daysWorked: number;
+  totalWorkingDays: number;
+  newUnitObjective: number;
+  usedUnitObjective: number;
+  totalUnitObjective: number;
+  newGrossObjective: string;
+  usedGrossObjective: string;
+  totalGrossObjective: string;
+  mtdNewUnits: number;
+  mtdUsedUnits: number;
+  mtdTotalUnits: number;
+  mtdNewGross: string;
+  mtdUsedGross: string;
+  mtdTotalGross: string;
+  newUnitPacing: number;
+  usedUnitPacing: number;
+  totalUnitPacing: number;
+  newGrossPacing: string;
+  usedGrossPacing: string;
+  totalGrossPacing: string;
+  dailyCalls: number;
+  dailyEmails: number;
+  dailyTexts: number;
+  dailyVideos: number;
+  dailyTotalActivity: number;
+};
+
 type Props = {
   scoreboard: ScoreboardRow[];
   referrals: Referral[];
   recentEvents: RecentEvent[];
   totals: Totals;
   salespersonRankings: SalespersonRanking[];
+  trackingStats: TrackingStats;
 };
 
 export default function AdminDashboardClient({
@@ -70,8 +106,9 @@ export default function AdminDashboardClient({
   recentEvents,
   totals,
   salespersonRankings,
+  trackingStats,
 }: Props) {
-  const [activeTab, setActiveTab] = useState<"sotm" | "scoreboard" | "referrals" | "activity">("sotm");
+  const [activeTab, setActiveTab] = useState<"mtd" | "sotm" | "scoreboard" | "referrals" | "activity">("mtd");
 
   const conversionRate = totals.pageViews > 0 
     ? ((totals.ctaClicks / totals.pageViews) * 100).toFixed(1) 
@@ -81,6 +118,14 @@ export default function AdminDashboardClient({
   const leader = salespersonRankings.length > 0 
     ? salespersonRankings.sort((a, b) => a.rank - b.rank)[0] 
     : null;
+
+  // Calculate progress percentages
+  const newProgress = trackingStats.newUnitObjective > 0 
+    ? Math.round((trackingStats.mtdNewUnits / trackingStats.newUnitObjective) * 100) : 0;
+  const usedProgress = trackingStats.usedUnitObjective > 0 
+    ? Math.round((trackingStats.mtdUsedUnits / trackingStats.usedUnitObjective) * 100) : 0;
+  const totalProgress = trackingStats.totalUnitObjective > 0 
+    ? Math.round((trackingStats.mtdTotalUnits / trackingStats.totalUnitObjective) * 100) : 0;
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#0f172a", color: "#fff" }}>
@@ -98,6 +143,21 @@ export default function AdminDashboardClient({
             </div>
             <div style={{ display: "flex", gap: 12 }}>
               <a 
+                href="/tv"
+                target="_blank"
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#8b5cf6",
+                  color: "#fff",
+                  borderRadius: 8,
+                  textDecoration: "none",
+                  fontSize: 14,
+                  fontWeight: 600
+                }}
+              >
+                📺 TV Display
+              </a>
+              <a 
                 href="https://docs.google.com/spreadsheets/d/1rqIYaIWK-rqxCwULE4IPibrLAcn8p9hRX_abJn8lR84/edit"
                 target="_blank"
                 style={{
@@ -110,7 +170,7 @@ export default function AdminDashboardClient({
                   fontWeight: 600
                 }}
               >
-                📝 Edit Rankings Sheet
+                📝 Edit Rankings
               </a>
               <a 
                 href="/review/robert" 
@@ -190,21 +250,11 @@ export default function AdminDashboardClient({
           <StatCard label="Referrals" value={totals.referralsShared} icon="🎁" color="#ec4899" />
         </div>
 
-        {/* Social Stats */}
-        <div style={{ 
-          display: "grid", 
-          gridTemplateColumns: "repeat(auto-fit, minmax(120px, 1fr))", 
-          gap: 12, 
-          marginBottom: 32 
-        }}>
-          <MiniStatCard label="Facebook" value={totals.facebookClicks} color="#1877F2" />
-          <MiniStatCard label="Instagram" value={totals.instagramClicks} color="#E4405F" />
-          <MiniStatCard label="TikTok" value={totals.tiktokClicks} color="#000000" />
-          <MiniStatCard label="Calendar" value={totals.calendarDownloads} color="#059669" />
-        </div>
-
         {/* Tabs */}
         <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
+          <TabButton active={activeTab === "mtd"} onClick={() => setActiveTab("mtd")}>
+            📈 MTD Tracking
+          </TabButton>
           <TabButton active={activeTab === "sotm"} onClick={() => setActiveTab("sotm")}>
             🏆 Salesperson of the Month
           </TabButton>
@@ -219,19 +269,197 @@ export default function AdminDashboardClient({
           </TabButton>
         </div>
 
+        {/* MTD Tracking Tab */}
+        {activeTab === "mtd" && (
+          <div>
+            {/* Day Progress */}
+            <div style={{ 
+              backgroundColor: "#1e293b", 
+              borderRadius: 12, 
+              padding: 20, 
+              marginBottom: 20,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center"
+            }}>
+              <div>
+                <h3 style={{ margin: 0, fontSize: 18, fontWeight: 600 }}>📅 Month Progress</h3>
+                <p style={{ margin: "4px 0 0", color: "#94a3b8", fontSize: 14 }}>
+                  Day {trackingStats.daysWorked} of {trackingStats.totalWorkingDays} working days
+                </p>
+              </div>
+              <div style={{ 
+                fontSize: 32, 
+                fontWeight: 800, 
+                color: "#3b82f6" 
+              }}>
+                {trackingStats.totalWorkingDays > 0 
+                  ? Math.round((trackingStats.daysWorked / trackingStats.totalWorkingDays) * 100) 
+                  : 0}% Complete
+              </div>
+            </div>
+
+            {/* Volume Cards */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 20, marginBottom: 20 }}>
+              
+              {/* New Cars */}
+              <div style={{ backgroundColor: "#1e293b", borderRadius: 12, padding: 20, border: "2px solid #3b82f6" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                  <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: "#3b82f6" }}>🚗 New Cars</h3>
+                  <span style={{ 
+                    backgroundColor: newProgress >= 100 ? "#22c55e" : newProgress >= 70 ? "#eab308" : "#dc2626",
+                    padding: "4px 12px",
+                    borderRadius: 20,
+                    fontSize: 14,
+                    fontWeight: 700
+                  }}>
+                    {newProgress}%
+                  </span>
+                </div>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 12 }}>
+                  <span style={{ fontSize: 48, fontWeight: 900, color: "#3b82f6" }}>{trackingStats.mtdNewUnits}</span>
+                  <span style={{ fontSize: 20, color: "#64748b" }}>/ {trackingStats.newUnitObjective}</span>
+                </div>
+                <ProgressBar progress={newProgress} color="#3b82f6" />
+                <div style={{ marginTop: 12, fontSize: 13, color: "#94a3b8" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                    <span>Pacing: {trackingStats.newUnitPacing} units</span>
+                    <span>Need: {Math.max(0, trackingStats.newUnitObjective - trackingStats.mtdNewUnits)} more</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 8, borderTop: "1px solid #334155" }}>
+                    <span>Gross MTD: <span style={{ color: "#22c55e" }}>{trackingStats.mtdNewGross}</span></span>
+                    <span>Obj: {trackingStats.newGrossObjective}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Used Cars */}
+              <div style={{ backgroundColor: "#1e293b", borderRadius: 12, padding: 20, border: "2px solid #f59e0b" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                  <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: "#f59e0b" }}>🚙 Used Cars</h3>
+                  <span style={{ 
+                    backgroundColor: usedProgress >= 100 ? "#22c55e" : usedProgress >= 70 ? "#eab308" : "#dc2626",
+                    padding: "4px 12px",
+                    borderRadius: 20,
+                    fontSize: 14,
+                    fontWeight: 700
+                  }}>
+                    {usedProgress}%
+                  </span>
+                </div>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 12 }}>
+                  <span style={{ fontSize: 48, fontWeight: 900, color: "#f59e0b" }}>{trackingStats.mtdUsedUnits}</span>
+                  <span style={{ fontSize: 20, color: "#64748b" }}>/ {trackingStats.usedUnitObjective}</span>
+                </div>
+                <ProgressBar progress={usedProgress} color="#f59e0b" />
+                <div style={{ marginTop: 12, fontSize: 13, color: "#94a3b8" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                    <span>Pacing: {trackingStats.usedUnitPacing} units</span>
+                    <span>Need: {Math.max(0, trackingStats.usedUnitObjective - trackingStats.mtdUsedUnits)} more</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 8, borderTop: "1px solid #334155" }}>
+                    <span>Gross MTD: <span style={{ color: "#22c55e" }}>{trackingStats.mtdUsedGross}</span></span>
+                    <span>Obj: {trackingStats.usedGrossObjective}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Total Units */}
+              <div style={{ backgroundColor: "#1e293b", borderRadius: 12, padding: 20, border: "2px solid #22c55e" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+                  <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: "#22c55e" }}>📊 Total Units</h3>
+                  <span style={{ 
+                    backgroundColor: totalProgress >= 100 ? "#22c55e" : totalProgress >= 70 ? "#eab308" : "#dc2626",
+                    padding: "4px 12px",
+                    borderRadius: 20,
+                    fontSize: 14,
+                    fontWeight: 700
+                  }}>
+                    {totalProgress}%
+                  </span>
+                </div>
+                <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 12 }}>
+                  <span style={{ fontSize: 48, fontWeight: 900, color: "#22c55e" }}>{trackingStats.mtdTotalUnits}</span>
+                  <span style={{ fontSize: 20, color: "#64748b" }}>/ {trackingStats.totalUnitObjective}</span>
+                </div>
+                <ProgressBar progress={totalProgress} color="#22c55e" />
+                <div style={{ marginTop: 12, fontSize: 13, color: "#94a3b8" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                    <span>Pacing: {trackingStats.totalUnitPacing} units</span>
+                    <span>Need: {Math.max(0, trackingStats.totalUnitObjective - trackingStats.mtdTotalUnits)} more</span>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", paddingTop: 8, borderTop: "1px solid #334155" }}>
+                    <span>Gross MTD: <span style={{ color: "#22c55e", fontWeight: 700 }}>{trackingStats.mtdTotalGross}</span></span>
+                    <span>Obj: {trackingStats.totalGrossObjective}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Daily Activity */}
+              <div style={{ backgroundColor: "#1e293b", borderRadius: 12, padding: 20, border: "2px solid #8b5cf6" }}>
+                <h3 style={{ margin: "0 0 16px", fontSize: 18, fontWeight: 700, color: "#8b5cf6" }}>📞 Daily Activity Average</h3>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                  <ActivityStat label="Calls" value={trackingStats.dailyCalls} icon="📞" />
+                  <ActivityStat label="Emails" value={trackingStats.dailyEmails} icon="✉️" />
+                  <ActivityStat label="Texts" value={trackingStats.dailyTexts} icon="💬" />
+                  <ActivityStat label="Videos" value={trackingStats.dailyVideos} icon="🎥" />
+                </div>
+                <div style={{ 
+                  marginTop: 16, 
+                  paddingTop: 16, 
+                  borderTop: "1px solid #334155",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center"
+                }}>
+                  <span style={{ fontSize: 14, color: "#94a3b8" }}>Total Activity/Day</span>
+                  <span style={{ fontSize: 28, fontWeight: 800, color: "#8b5cf6" }}>
+                    {trackingStats.dailyTotalActivity.toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Today's Deliveries */}
+            <div style={{ backgroundColor: "#1e293b", borderRadius: 12, padding: 20 }}>
+              <h3 style={{ margin: "0 0 16px", fontSize: 16, fontWeight: 700, color: "#94a3b8" }}>🚗 Today's Deliveries</h3>
+              <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
+                <div style={{ fontSize: 64, fontWeight: 900, color: trackingStats.todaysDeliveries > 0 ? "#22c55e" : "#64748b" }}>
+                  {trackingStats.todaysDeliveries}
+                </div>
+                {trackingStats.todaysDeals.length > 0 ? (
+                  <div style={{ flex: 1 }}>
+                    {trackingStats.todaysDeals.map((deal, idx) => (
+                      <div key={idx} style={{
+                        padding: "8px 12px",
+                        backgroundColor: "#334155",
+                        borderRadius: 8,
+                        marginBottom: 8,
+                        fontSize: 13
+                      }}>
+                        <span style={{ fontWeight: 600, color: "#fff" }}>{deal.vehicle}</span>
+                        <span style={{ color: "#94a3b8" }}> • {deal.salesperson.split(" / ")[0]} • {deal.newUsed}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p style={{ color: "#64748b", fontSize: 14 }}>No deliveries today yet</p>
+                )}
+              </div>
+            </div>
+
+            <div style={{ marginTop: 16, padding: 12, backgroundColor: "#334155", borderRadius: 8, fontSize: 12, color: "#94a3b8", textAlign: "center" }}>
+              💡 Data syncs from TRACKING SHEET every minute. <a href="https://docs.google.com/spreadsheets/d/18MsFJckUAR1549ArywXz5tAn7M1q87jb8dzqVQhUWPQ/edit" target="_blank" style={{ color: "#3b82f6" }}>Open Deal Log →</a>
+            </div>
+          </div>
+        )}
+
         {/* SOTM Tab */}
         {activeTab === "sotm" && (
           <div style={{ backgroundColor: "#1e293b", borderRadius: 12, overflow: "hidden" }}>
             {salespersonRankings.length === 0 ? (
               <div style={{ padding: 40, textAlign: "center", color: "#94a3b8" }}>
                 <p>No data found. Make sure your Google Sheet has data in the "Current" tab.</p>
-                <a 
-                  href="https://docs.google.com/spreadsheets/d/1rqIYaIWK-rqxCwULE4IPibrLAcn8p9hRX_abJn8lR84/edit"
-                  target="_blank"
-                  style={{ color: "#3b82f6" }}
-                >
-                  Open Google Sheet →
-                </a>
               </div>
             ) : (
               <div style={{ overflowX: "auto" }}>
@@ -327,9 +555,6 @@ export default function AdminDashboardClient({
                 </table>
               </div>
             )}
-            <div style={{ padding: 16, borderTop: "1px solid #334155", fontSize: 12, color: "#64748b" }}>
-              💡 Data syncs from Google Sheets every 5 minutes. <a href="https://docs.google.com/spreadsheets/d/1rqIYaIWK-rqxCwULE4IPibrLAcn8p9hRX_abJn8lR84/edit" target="_blank" style={{ color: "#3b82f6" }}>Edit Sheet →</a>
-            </div>
           </div>
         )}
 
@@ -404,7 +629,7 @@ export default function AdminDashboardClient({
           <div style={{ backgroundColor: "#1e293b", borderRadius: 12, overflow: "hidden" }}>
             {referrals.length === 0 ? (
               <div style={{ padding: 40, textAlign: "center", color: "#94a3b8" }}>
-                No referrals yet. They'll appear here when customers share referral links!
+                No referrals yet.
               </div>
             ) : (
               <div style={{ overflowX: "auto" }}>
@@ -430,13 +655,7 @@ export default function AdminDashboardClient({
                         <td style={tdStyle}>{ref.salesperson_slug}</td>
                         <td style={tdStyle}>{new Date(ref.created_at).toLocaleDateString()}</td>
                         <td style={tdStyle}>
-                          <a 
-                            href={`/refer/${ref.referral_code}`} 
-                            target="_blank"
-                            style={{ color: "#3b82f6", textDecoration: "none" }}
-                          >
-                            View →
-                          </a>
+                          <a href={`/refer/${ref.referral_code}`} target="_blank" style={{ color: "#3b82f6" }}>View →</a>
                         </td>
                       </tr>
                     ))}
@@ -495,11 +714,7 @@ export default function AdminDashboardClient({
                 }}
               >
                 <span>{row.display_name}</span>
-                <a 
-                  href={row.review_link} 
-                  target="_blank"
-                  style={{ color: "#3b82f6", textDecoration: "none", fontSize: 12 }}
-                >
+                <a href={row.review_link} target="_blank" style={{ color: "#3b82f6", textDecoration: "none", fontSize: 12 }}>
                   {row.review_link.replace("https://", "")}
                 </a>
               </div>
@@ -527,27 +742,6 @@ function StatCard({ label, value, icon, color }: { label: string; value: number 
   );
 }
 
-function MiniStatCard({ label, value, color }: { label: string; value: number; color: string }) {
-  return (
-    <div style={{
-      backgroundColor: "#1e293b",
-      borderRadius: 8,
-      padding: 14,
-      textAlign: "center"
-    }}>
-      <div style={{ 
-        width: 10, 
-        height: 10, 
-        borderRadius: "50%", 
-        backgroundColor: color, 
-        margin: "0 auto 8px" 
-      }} />
-      <div style={{ fontSize: 20, fontWeight: 700 }}>{value}</div>
-      <div style={{ fontSize: 11, color: "#94a3b8" }}>{label}</div>
-    </div>
-  );
-}
-
 function TabButton({ children, active, onClick }: { children: React.ReactNode; active: boolean; onClick: () => void }) {
   return (
     <button
@@ -568,53 +762,63 @@ function TabButton({ children, active, onClick }: { children: React.ReactNode; a
   );
 }
 
-// Helper Functions
+function ProgressBar({ progress, color }: { progress: number; color: string }) {
+  return (
+    <div style={{ backgroundColor: "#334155", borderRadius: 8, height: 12, overflow: "hidden" }}>
+      <div style={{
+        width: `${Math.min(progress, 100)}%`,
+        height: "100%",
+        backgroundColor: color,
+        borderRadius: 8
+      }} />
+    </div>
+  );
+}
+
+function ActivityStat({ label, value, icon }: { label: string; value: number; icon: string }) {
+  return (
+    <div style={{
+      backgroundColor: "#334155",
+      borderRadius: 8,
+      padding: 12,
+      display: "flex",
+      alignItems: "center",
+      gap: 10
+    }}>
+      <span style={{ fontSize: 20 }}>{icon}</span>
+      <div>
+        <div style={{ fontSize: 18, fontWeight: 700 }}>{value.toLocaleString()}</div>
+        <div style={{ fontSize: 11, color: "#94a3b8" }}>{label}</div>
+      </div>
+    </div>
+  );
+}
+
 function getEventIcon(type: string): string {
   const icons: Record<string, string> = {
-    page_view: "👁️",
-    cta_click: "⭐",
-    facebook_click: "📘",
-    instagram_click: "📸",
-    tiktok_click: "🎵",
-    save_contact: "📇",
-    save_service_contact: "🔧",
-    save_accessories_contact: "🎨",
-    schedule_service_click: "📅",
-    referral_share: "🎁",
-    calendar_download: "📆",
+    page_view: "👁️", cta_click: "⭐", facebook_click: "📘", instagram_click: "📸",
+    tiktok_click: "🎵", save_contact: "📇", save_service_contact: "🔧",
+    save_accessories_contact: "🎨", schedule_service_click: "📅",
+    referral_share: "🎁", calendar_download: "📆",
   };
   return icons[type] || "📋";
 }
 
 function formatEventType(type: string): string {
-  return type
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (l) => l.toUpperCase());
+  return type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
 }
 
 function formatTimeAgo(dateString: string): string {
-  const date = new Date(dateString);
-  const now = new Date();
-  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-
+  const seconds = Math.floor((new Date().getTime() - new Date(dateString).getTime()) / 1000);
   if (seconds < 60) return "Just now";
   if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
   if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
   return `${Math.floor(seconds / 86400)}d ago`;
 }
 
-// Styles
 const thStyle: React.CSSProperties = {
-  textAlign: "left",
-  padding: "12px 16px",
-  fontSize: 12,
-  fontWeight: 600,
-  color: "#94a3b8",
-  textTransform: "uppercase",
-  letterSpacing: "0.5px"
+  textAlign: "left", padding: "12px 16px", fontSize: 12, fontWeight: 600,
+  color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.5px"
 };
 
-const tdStyle: React.CSSProperties = {
-  padding: "12px 16px",
-  verticalAlign: "middle"
-};
+const tdStyle: React.CSSProperties = { padding: "12px 16px", verticalAlign: "middle" };
