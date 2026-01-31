@@ -99,6 +99,7 @@ type Props = {
   salespersonRankings: SalespersonRanking[];
   trackingStats: TrackingStats;
   onLogout?: () => void;
+  userName?: string;
 };
 
 export default function AdminDashboardClient({
@@ -109,6 +110,7 @@ export default function AdminDashboardClient({
   salespersonRankings,
   trackingStats,
   onLogout,
+  userName,
 }: Props) {
   const [activeTab, setActiveTab] = useState<"mtd" | "sotm" | "scoreboard" | "referrals" | "activity">("mtd");
 
@@ -141,7 +143,9 @@ export default function AdminDashboardClient({
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
             <div>
               <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0 }}>📊 Admin Dashboard</h1>
-              <p style={{ fontSize: 14, color: "#94a3b8", margin: "4px 0 0 0" }}>Gallatin CDJR Review System</p>
+              <p style={{ fontSize: 14, color: "#94a3b8", margin: "4px 0 0 0" }}>
+                {userName ? `Welcome, ${userName}` : "Gallatin CDJR Review System"}
+              </p>
             </div>
             <div style={{ display: "flex", gap: 12 }}>
               <a 
