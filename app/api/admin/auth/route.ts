@@ -1,26 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-
-// Admin users database
-// In production, this should be stored in a database with hashed passwords
-const ADMIN_USERS: Record<string, { name: string; password: string }> = {
-  "rob.l@gallatincdjr.com": {
-    name: "Robert Lisowski",
-    password: "Robandmeg2018!",
-  },
-  "dominick.f@gallatincdjr.com": {
-    name: "Dominick Ferrara",
-    password: "GallatinCDJR2026!",
-  },
-  "joe.s@gallatincdjr.com": {
-    name: "Joseph Smith",
-    password: "GallatinCDJR2026!",
-  },
-  "trey.a@gallatincdjr.com": {
-    name: "Trey Adcox",
-    password: "GallatinCDJR2026!",
-  },
-};
+import { supabaseServer } from "@/lib/supabase";
 
 // Email to receive password reset requests
 const ADMIN_NOTIFICATION_EMAIL = "robertlisowski57@gmail.com";
@@ -62,7 +42,8 @@ async function sendPasswordResetEmail(userEmail: string, userName: string) {
               </div>
               
               <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">
-                To reset this user's password, you'll need to update it in the admin authentication code and redeploy.
+                To reset this user's password, go to the Super Admin panel at:<br>
+                <a href="https://gallatincdjr.reviews/superadmin" style="color: #dc2626;">https://gallatincdjr.reviews/superadmin</a>
               </p>
               
               <div style="background: #fef3c7; padding: 15px; border-radius: 8px; border: 1px solid #f59e0b;">
@@ -99,12 +80,18 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { action, email, password } = body;
 
+    const normalizedEmail = email?.toLowerCase().trim();
+
     // Handle password reset request
     if (action === "forgot_password") {
-      const normalizedEmail = email?.toLowerCase().trim();
-      const user = ADMIN_USERS[normalizedEmail];
+      // Look up user in database
+      const { data: user } = await supabaseServer
+        .from("admin_users")
+        .select("name, email, is_active")
+        .eq("email", normalizedEmail)
+        .single();
 
-      if (user) {
+      if (user && user.is_active) {
         // Send email notification
         await sendPasswordResetEmail(normalizedEmail, user.name);
       }
@@ -116,42 +103,67 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Handle login
-    const normalizedEmail = email?.toLowerCase().trim();
-    const user = ADMIN_USERS[normalizedEmail];
+    // Handle login - look up user in database
+    const { data: user, error } = await supabaseServer
+      .from("admin_users")
+      .select("id, email, name, password, is_active")
+      .eq("email", normalizedEmail)
+      .single();
 
-    if (user && user.password === password) {
-      // Create a session token with user info
-      const sessionData = {
-        email: normalizedEmail,
-        name: user.name,
-        timestamp: Date.now(),
-      };
-      const sessionToken = Buffer.from(JSON.stringify(sessionData)).toString("base64");
-
-      // Set cookie that expires in 24 hours
-      const cookieStore = await cookies();
-      cookieStore.set("admin_session", sessionToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 60 * 60 * 24, // 24 hours
-        path: "/",
-      });
-
-      return NextResponse.json({ 
-        success: true,
-        user: {
-          name: user.name,
-          email: normalizedEmail,
-        }
-      });
-    } else {
+    if (error || !user) {
       return NextResponse.json(
         { success: false, error: "Invalid email or password" },
         { status: 401 }
       );
     }
+
+    // Check if user is active
+    if (!user.is_active) {
+      return NextResponse.json(
+        { success: false, error: "Your account has been deactivated. Please contact an administrator." },
+        { status: 401 }
+      );
+    }
+
+    // Check password
+    if (user.password !== password) {
+      return NextResponse.json(
+        { success: false, error: "Invalid email or password" },
+        { status: 401 }
+      );
+    }
+
+    // Update last login
+    await supabaseServer
+      .from("admin_users")
+      .update({ last_login: new Date().toISOString() })
+      .eq("id", user.id);
+
+    // Create session token
+    const sessionData = {
+      email: normalizedEmail,
+      name: user.name,
+      timestamp: Date.now(),
+    };
+    const sessionToken = Buffer.from(JSON.stringify(sessionData)).toString("base64");
+
+    // Set cookie
+    const cookieStore = await cookies();
+    cookieStore.set("admin_session", sessionToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24, // 24 hours
+      path: "/",
+    });
+
+    return NextResponse.json({ 
+      success: true,
+      user: {
+        name: user.name,
+        email: normalizedEmail,
+      }
+    });
   } catch (error) {
     console.error("Auth error:", error);
     return NextResponse.json(
