@@ -1,1 +1,82 @@
+// app/admin/page.tsx
+// Admin dashboard for viewing scoreboard stats
 
+import { supabaseServer } from "@/lib/supabase";
+import { Metadata } from "next";
+import AdminDashboardClient from "./AdminDashboardClient";
+
+export const metadata: Metadata = {
+  title: "Admin Dashboard | Gallatin CDJR",
+  robots: { index: false, follow: false },
+};
+
+async function getScoreboardData() {
+  const { data: scoreboard } = await supabaseServer
+    .from("review_scoreboard")
+    .select("*");
+
+  return scoreboard || [];
+}
+
+async function getReferralData() {
+  const { data: referrals } = await supabaseServer
+    .from("referrals")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  return referrals || [];
+}
+
+async function getRecentEvents() {
+  const { data: events } = await supabaseServer
+    .from("review_events")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(100);
+
+  return events || [];
+}
+
+export default async function AdminPage() {
+  const [scoreboard, referrals, recentEvents] = await Promise.all([
+    getScoreboardData(),
+    getReferralData(),
+    getRecentEvents(),
+  ]);
+
+  // Calculate totals
+  const totals = scoreboard.reduce(
+    (acc, row) => ({
+      pageViews: acc.pageViews + (row.page_views || 0),
+      ctaClicks: acc.ctaClicks + (row.cta_clicks || 0),
+      facebookClicks: acc.facebookClicks + (row.facebook_clicks || 0),
+      instagramClicks: acc.instagramClicks + (row.instagram_clicks || 0),
+      tiktokClicks: acc.tiktokClicks + (row.tiktok_clicks || 0),
+      contactSaves: acc.contactSaves + (row.contact_saves || 0),
+      serviceClicks: acc.serviceClicks + (row.service_clicks || 0),
+      referralsShared: acc.referralsShared + (row.referrals_shared || 0),
+      calendarDownloads: acc.calendarDownloads + (row.calendar_downloads || 0),
+    }),
+    {
+      pageViews: 0,
+      ctaClicks: 0,
+      facebookClicks: 0,
+      instagramClicks: 0,
+      tiktokClicks: 0,
+      contactSaves: 0,
+      serviceClicks: 0,
+      referralsShared: 0,
+      calendarDownloads: 0,
+    }
+  );
+
+  return (
+    <AdminDashboardClient
+      scoreboard={scoreboard}
+      referrals={referrals}
+      recentEvents={recentEvents}
+      totals={totals}
+    />
+  );
+}
