@@ -14,6 +14,10 @@ type AdminUser = {
   created_by: string | null;
 };
 
+type EditingUser = AdminUser & {
+  newPassword?: string;
+};
+
 export default function SuperAdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState("");
@@ -22,7 +26,7 @@ export default function SuperAdminPage() {
   const [users, setUsers] = useState<AdminUser[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
+  const [editingUser, setEditingUser] = useState<EditingUser | null>(null);
   const [newUser, setNewUser] = useState({ name: "", email: "", password: "" });
 
   // Check auth status on load
@@ -145,7 +149,7 @@ export default function SuperAdminPage() {
         body: JSON.stringify({
           id: editingUser.id,
           name: editingUser.name,
-          password: editingUser.password || undefined,
+          password: editingUser.newPassword || undefined,
         }),
       });
 
@@ -329,7 +333,7 @@ export default function SuperAdminPage() {
                         {user.is_active ? "Deactivate" : "Activate"}
                       </button>
                       <button
-                        onClick={() => { setEditingUser({...user, password: ""} as any); setShowEditModal(true); }}
+                        onClick={() => { setEditingUser({...user, newPassword: ""}); setShowEditModal(true); }}
                         style={{ ...styles.actionButton, backgroundColor: "#3b82f620", color: "#3b82f6" }}
                       >
                         Edit
@@ -432,8 +436,8 @@ export default function SuperAdminPage() {
                 <label style={styles.label}>New Password (leave blank to keep current)</label>
                 <input
                   type="text"
-                  value={(editingUser as any).password || ""}
-                  onChange={(e) => setEditingUser({ ...editingUser, password: e.target.value } as any)}
+                  value={editingUser.newPassword || ""}
+                  onChange={(e) => setEditingUser({ ...editingUser, newPassword: e.target.value })}
                   placeholder="Enter new password"
                   style={styles.input}
                 />
