@@ -20,29 +20,31 @@ type DeliveryStats = {
     vehicle: string;
     newUsed: string;
   }>;
-  mtdNewUnits: number;
-  mtdUsedUnits: number;
-  mtdTotalUnits: number;
-  mtdTotalGross: string;
+  daysWorked: number;
+  totalWorkingDays: number;
   newUnitObjective: number;
   usedUnitObjective: number;
   totalUnitObjective: number;
-  grossObjective: string;
+  newGrossObjective: string;
+  usedGrossObjective: string;
+  totalGrossObjective: string;
+  mtdNewUnits: number;
+  mtdUsedUnits: number;
+  mtdTotalUnits: number;
+  mtdNewGross: string;
+  mtdUsedGross: string;
+  mtdTotalGross: string;
   newUnitPacing: number;
   usedUnitPacing: number;
   totalUnitPacing: number;
-  mtdCalls: number;
-  mtdEmails: number;
-  mtdTexts: number;
-  mtdVideos: number;
-  mtdTotalActivity: number;
-  mtdInternetLeads: number;
-  mtdPhoneLeads: number;
-  mtdWalkIns: number;
-  mtdCampaign: number;
-  mtdTotalLeads: number;
-  daysWorked: number;
-  totalWorkingDays: number;
+  newGrossPacing: string;
+  usedGrossPacing: string;
+  totalGrossPacing: string;
+  dailyCalls: number;
+  dailyEmails: number;
+  dailyTexts: number;
+  dailyVideos: number;
+  dailyTotalActivity: number;
 };
 
 type Props = {
@@ -97,7 +99,7 @@ export default function TVDisplayClient({ salespersonRankings, deliveryStats }: 
   const leader = sortedRankings[0];
 
   // Calculate progress percentages
-  const unitProgress = deliveryStats.totalUnitObjective > 0 
+  const totalProgress = deliveryStats.totalUnitObjective > 0 
     ? Math.round((deliveryStats.mtdTotalUnits / deliveryStats.totalUnitObjective) * 100) 
     : 0;
 
@@ -282,16 +284,16 @@ export default function TVDisplayClient({ salespersonRankings, deliveryStats }: 
               </span>
             </div>
             <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 8 }}>
-              <span style={{ fontSize: 42, fontWeight: 900, color: unitProgress >= 100 ? "#22c55e" : "#fff" }}>
+              <span style={{ fontSize: 42, fontWeight: 900, color: totalProgress >= 100 ? "#22c55e" : "#fff" }}>
                 {deliveryStats.mtdTotalUnits}
               </span>
               <span style={{ fontSize: 20, color: "#64748b" }}>/ {deliveryStats.totalUnitObjective}</span>
             </div>
             <div style={{ backgroundColor: "#333", borderRadius: 8, height: 12, overflow: "hidden" }}>
               <div style={{
-                width: `${Math.min(unitProgress, 100)}%`,
+                width: `${Math.min(totalProgress, 100)}%`,
                 height: "100%",
-                backgroundColor: unitProgress >= 100 ? "#22c55e" : unitProgress >= 70 ? "#eab308" : "#dc2626",
+                backgroundColor: totalProgress >= 100 ? "#22c55e" : totalProgress >= 70 ? "#eab308" : "#dc2626",
                 borderRadius: 8,
                 transition: "width 0.5s ease"
               }} />
@@ -302,7 +304,7 @@ export default function TVDisplayClient({ salespersonRankings, deliveryStats }: 
             </div>
           </div>
 
-          {/* Gross & Pacing */}
+          {/* Gross MTD */}
           <div style={{
             backgroundColor: "#111",
             borderRadius: 12,
@@ -315,8 +317,12 @@ export default function TVDisplayClient({ salespersonRankings, deliveryStats }: 
             <div style={{ fontSize: 28, fontWeight: 800, color: "#22c55e", marginBottom: 8 }}>
               {deliveryStats.mtdTotalGross}
             </div>
-            <div style={{ fontSize: 12, color: "#64748b" }}>
-              Objective: {deliveryStats.grossObjective}
+            <div style={{ fontSize: 12, color: "#64748b", marginBottom: 8 }}>
+              Objective: {deliveryStats.totalGrossObjective}
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: "#94a3b8", paddingTop: 8, borderTop: "1px solid #222" }}>
+              <span>New: {deliveryStats.mtdNewGross}</span>
+              <span>Used: {deliveryStats.mtdUsedGross}</span>
             </div>
           </div>
 
@@ -355,7 +361,7 @@ export default function TVDisplayClient({ salespersonRankings, deliveryStats }: 
             )}
           </div>
 
-          {/* Activity Tracking */}
+          {/* Daily Activity Averages */}
           <div style={{
             backgroundColor: "#111",
             borderRadius: 12,
@@ -363,13 +369,13 @@ export default function TVDisplayClient({ salespersonRankings, deliveryStats }: 
             border: "1px solid #222"
           }}>
             <h3 style={{ fontSize: 12, fontWeight: 700, color: "#64748b", margin: "0 0 12px 0", textTransform: "uppercase" }}>
-              📞 MTD Activity
+              📞 Daily Activity Average
             </h3>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-              <MiniStat label="Calls" value={deliveryStats.mtdCalls.toLocaleString()} />
-              <MiniStat label="Emails" value={deliveryStats.mtdEmails.toLocaleString()} />
-              <MiniStat label="Texts" value={deliveryStats.mtdTexts.toLocaleString()} />
-              <MiniStat label="Videos" value={deliveryStats.mtdVideos.toLocaleString()} />
+              <MiniStat label="Calls" value={deliveryStats.dailyCalls.toLocaleString()} />
+              <MiniStat label="Emails" value={deliveryStats.dailyEmails.toLocaleString()} />
+              <MiniStat label="Texts" value={deliveryStats.dailyTexts.toLocaleString()} />
+              <MiniStat label="Videos" value={deliveryStats.dailyVideos.toLocaleString()} />
             </div>
             <div style={{ 
               marginTop: 8, 
@@ -379,37 +385,8 @@ export default function TVDisplayClient({ salespersonRankings, deliveryStats }: 
               justifyContent: "space-between",
               fontSize: 14
             }}>
-              <span style={{ color: "#64748b" }}>Total</span>
-              <span style={{ fontWeight: 700, color: "#22c55e" }}>{deliveryStats.mtdTotalActivity.toLocaleString()}</span>
-            </div>
-          </div>
-
-          {/* Lead Tracking */}
-          <div style={{
-            backgroundColor: "#111",
-            borderRadius: 12,
-            padding: 16,
-            border: "1px solid #222"
-          }}>
-            <h3 style={{ fontSize: 12, fontWeight: 700, color: "#64748b", margin: "0 0 12px 0", textTransform: "uppercase" }}>
-              🎯 MTD Leads
-            </h3>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-              <MiniStat label="Internet" value={deliveryStats.mtdInternetLeads.toString()} />
-              <MiniStat label="Phone" value={deliveryStats.mtdPhoneLeads.toString()} />
-              <MiniStat label="Walk-Ins" value={deliveryStats.mtdWalkIns.toString()} />
-              <MiniStat label="Campaign" value={deliveryStats.mtdCampaign.toString()} />
-            </div>
-            <div style={{ 
-              marginTop: 8, 
-              paddingTop: 8, 
-              borderTop: "1px solid #222", 
-              display: "flex", 
-              justifyContent: "space-between",
-              fontSize: 14
-            }}>
-              <span style={{ color: "#64748b" }}>Total</span>
-              <span style={{ fontWeight: 700, color: "#3b82f6" }}>{deliveryStats.mtdTotalLeads.toLocaleString()}</span>
+              <span style={{ color: "#64748b" }}>Total/Day</span>
+              <span style={{ fontWeight: 700, color: "#22c55e" }}>{deliveryStats.dailyTotalActivity.toLocaleString()}</span>
             </div>
           </div>
 
