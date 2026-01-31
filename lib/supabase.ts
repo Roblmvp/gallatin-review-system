@@ -1,38 +1,34 @@
 // lib/supabase.ts
 // Server-side Supabase client
 
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 
-if (!process.env.SUPABASE_URL) {
-  throw new Error("Missing SUPABASE_URL environment variable");
-}
+let supabaseServerInstance: SupabaseClient | null = null;
 
-if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-  throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY environment variable");
-}
+// Lazy initialization - only creates client when first used (at runtime, not build time)
+export function getSupabaseServer(): SupabaseClient {
+  if (supabaseServerInstance) {
+    return supabaseServerInstance;
+  }
 
-// Server-side client with service role (full access)
-// IMPORTANT: Never expose this in client components
-export const supabaseServer = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY,
-  {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY environment variable");
+  }
+
+  supabaseServerInstance = createClient(supabaseUrl, supabaseKey, {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
     },
-  }
-);
+  });
 
-// Optional: Anonymous client for public operations
-// Uses the anon key which has RLS restrictions
-export const supabaseAnon = createClient(
-  process.env.SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY,
-  {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: false,
-    },
-  }
-);
+  return supabaseServerInstance;
+}
+
+// For backwards compatibility - use getter
+export const supabaseServer = {
+  from: (table: string) => getSupabaseServer().from(table),
+};
