@@ -98,6 +98,7 @@ type Props = {
   totals: Totals;
   salespersonRankings: SalespersonRanking[];
   trackingStats: TrackingStats;
+  onLogout?: () => void;
 };
 
 export default function AdminDashboardClient({
@@ -107,6 +108,7 @@ export default function AdminDashboardClient({
   totals,
   salespersonRankings,
   trackingStats,
+  onLogout,
 }: Props) {
   const [activeTab, setActiveTab] = useState<"mtd" | "sotm" | "scoreboard" | "referrals" | "activity">("mtd");
 
@@ -187,6 +189,23 @@ export default function AdminDashboardClient({
               >
                 View Live Page →
               </a>
+              {onLogout && (
+                <button
+                  onClick={onLogout}
+                  style={{
+                    padding: "10px 20px",
+                    backgroundColor: "#334155",
+                    color: "#fff",
+                    borderRadius: 8,
+                    border: "none",
+                    fontSize: 14,
+                    fontWeight: 600,
+                    cursor: "pointer"
+                  }}
+                >
+                  🚪 Logout
+                </button>
+              )}
             </div>
           </div>
         </div>
