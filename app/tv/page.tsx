@@ -1,7 +1,7 @@
 // app/tv/page.tsx
 // Live TV Display for Sales Floor - Salesperson Leaderboard
 
-import { fetchSalespersonRankings } from "@/lib/googleSheets";
+import { fetchSalespersonRankings, fetchDeliveryStats } from "@/lib/googleSheets";
 import { Metadata } from "next";
 import TVDisplayClient from "./TVDisplayClient";
 
@@ -15,7 +15,15 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function TVPage() {
-  const salespersonRankings = await fetchSalespersonRankings();
+  const [salespersonRankings, deliveryStats] = await Promise.all([
+    fetchSalespersonRankings(),
+    fetchDeliveryStats(),
+  ]);
 
-  return <TVDisplayClient salespersonRankings={salespersonRankings} />;
+  return (
+    <TVDisplayClient 
+      salespersonRankings={salespersonRankings} 
+      deliveryStats={deliveryStats}
+    />
+  );
 }
