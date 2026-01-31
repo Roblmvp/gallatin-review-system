@@ -3,21 +3,19 @@
 import { useState, useEffect } from "react";
 
 type Props = {
-  onLogin: (password: string) => void;
-  onSMSLogin?: (phone: string) => void;
+  onLogin: (email: string, password: string) => void;
+  onForgotPassword: (email: string) => Promise<{ success: boolean; message: string }>;
   error?: string;
 };
 
-export default function AdminLoginForm({ onLogin, onSMSLogin, error }: Props) {
-  const [loginMethod, setLoginMethod] = useState<"password" | "sms">("password");
+export default function AdminLoginForm({ onLogin, onForgotPassword, error }: Props) {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [phone, setPhone] = useState("");
-  const [verificationCode, setVerificationCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [smsSent, setSmsSent] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotSent, setForgotSent] = useState(false);
+  const [forgotMessage, setForgotMessage] = useState("");
 
   // Add keyframes on mount
   useEffect(() => {
@@ -33,10 +31,6 @@ export default function AdminLoginForm({ onLogin, onSMSLogin, error }: Props) {
         @keyframes spin {
           to { transform: rotate(360deg); }
         }
-        @keyframes float {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-10px); }
-        }
         .login-input:focus {
           border-color: #dc2626 !important;
           box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2) !important;
@@ -44,9 +38,6 @@ export default function AdminLoginForm({ onLogin, onSMSLogin, error }: Props) {
         .login-btn:hover:not(:disabled) {
           transform: translateY(-2px);
           box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5);
-        }
-        .login-tab:hover {
-          background-color: rgba(255, 255, 255, 0.05);
         }
         .forgot-link:hover {
           color: #dc2626;
@@ -59,40 +50,17 @@ export default function AdminLoginForm({ onLogin, onSMSLogin, error }: Props) {
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    await onLogin(password);
-    setIsLoading(false);
-  };
-
-  const handleSendSMS = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    setSmsSent(true);
-    setIsLoading(false);
-  };
-
-  const handleVerifySMS = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    if (verificationCode.length === 6) {
-      await onLogin(verificationCode);
-    }
+    await onLogin(email, password);
     setIsLoading(false);
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    const result = await onForgotPassword(forgotEmail);
+    setForgotMessage(result.message);
     setForgotSent(true);
     setIsLoading(false);
-  };
-
-  const formatPhone = (value: string) => {
-    const numbers = value.replace(/\D/g, "");
-    if (numbers.length <= 3) return numbers;
-    if (numbers.length <= 6) return `(${numbers.slice(0, 3)}) ${numbers.slice(3)}`;
-    return `(${numbers.slice(0, 3)}) ${numbers.slice(3, 6)}-${numbers.slice(6, 10)}`;
   };
 
   // Forgot Password Screen
@@ -105,7 +73,7 @@ export default function AdminLoginForm({ onLogin, onSMSLogin, error }: Props) {
         
         <div style={styles.loginCard}>
           <button 
-            onClick={() => { setShowForgotPassword(false); setForgotSent(false); }}
+            onClick={() => { setShowForgotPassword(false); setForgotSent(false); setForgotMessage(""); }}
             style={styles.backButton}
           >
             ← Back to login
@@ -132,11 +100,9 @@ export default function AdminLoginForm({ onLogin, onSMSLogin, error }: Props) {
           {forgotSent ? (
             <div style={styles.successMessage}>
               <div style={styles.successIcon}>✓</div>
-              <p style={styles.successText}>
-                If an account exists for <strong>{forgotEmail}</strong>, you will receive an email with instructions shortly.
-              </p>
+              <p style={styles.successText}>{forgotMessage}</p>
               <button 
-                onClick={() => { setShowForgotPassword(false); setForgotSent(false); }}
+                onClick={() => { setShowForgotPassword(false); setForgotSent(false); setForgotMessage(""); }}
                 style={styles.primaryButton}
                 className="login-btn"
               >
@@ -147,15 +113,18 @@ export default function AdminLoginForm({ onLogin, onSMSLogin, error }: Props) {
             <form onSubmit={handleForgotPassword} style={styles.form}>
               <div style={styles.inputGroup}>
                 <label style={styles.label}>Email Address</label>
-                <input
-                  type="email"
-                  value={forgotEmail}
-                  onChange={(e) => setForgotEmail(e.target.value)}
-                  placeholder="you@gallatincdjr.com"
-                  style={styles.input}
-                  className="login-input"
-                  required
-                />
+                <div style={styles.inputWrapper}>
+                  <input
+                    type="email"
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    placeholder="you@gallatincdjr.com"
+                    style={styles.input}
+                    className="login-input"
+                    required
+                  />
+                  <span style={styles.inputIcon}>✉️</span>
+                </div>
               </div>
 
               <button
@@ -204,32 +173,6 @@ export default function AdminLoginForm({ onLogin, onSMSLogin, error }: Props) {
         <h1 style={styles.title}>Welcome Back</h1>
         <p style={styles.subtitle}>Sign in to access your admin dashboard</p>
 
-        {/* Login Method Tabs */}
-        <div style={styles.tabContainer}>
-          <button
-            onClick={() => { setLoginMethod("password"); setSmsSent(false); }}
-            style={{
-              ...styles.tab,
-              ...(loginMethod === "password" ? styles.tabActive : {}),
-            }}
-            className="login-tab"
-          >
-            <span style={styles.tabIcon}>🔐</span>
-            Password
-          </button>
-          <button
-            onClick={() => setLoginMethod("sms")}
-            style={{
-              ...styles.tab,
-              ...(loginMethod === "sms" ? styles.tabActive : {}),
-            }}
-            className="login-tab"
-          >
-            <span style={styles.tabIcon}>📱</span>
-            SMS Code
-          </button>
-        </div>
-
         {/* Error Message */}
         {error && (
           <div style={styles.errorContainer}>
@@ -238,177 +181,69 @@ export default function AdminLoginForm({ onLogin, onSMSLogin, error }: Props) {
           </div>
         )}
 
-        {/* Password Login Form */}
-        {loginMethod === "password" && (
-          <form onSubmit={handlePasswordSubmit} style={styles.form}>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Password</label>
-              <div style={styles.inputWrapper}>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
-                  style={styles.input}
-                  className="login-input"
-                  autoFocus
-                />
-                <span style={styles.inputIcon}>🔒</span>
-              </div>
+        {/* Login Form */}
+        <form onSubmit={handlePasswordSubmit} style={styles.form}>
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Email</label>
+            <div style={styles.inputWrapper}>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@gallatincdjr.com"
+                style={styles.input}
+                className="login-input"
+                autoFocus
+                autoComplete="email"
+              />
+              <span style={styles.inputIcon}>✉️</span>
             </div>
+          </div>
 
-            <button
-              type="submit"
-              disabled={isLoading || !password}
-              style={{
-                ...styles.primaryButton,
-                opacity: isLoading || !password ? 0.6 : 1,
-                cursor: isLoading || !password ? "not-allowed" : "pointer",
-              }}
-              className="login-btn"
-            >
-              {isLoading ? (
-                <span style={styles.loadingSpinner}>
-                  <span style={styles.spinner} /> Signing in...
-                </span>
-              ) : (
-                <>Sign In <span style={{ marginLeft: 8 }}>→</span></>
-              )}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setShowForgotPassword(true)}
-              style={styles.forgotPassword}
-              className="forgot-link"
-            >
-              Forgot your password?
-            </button>
-          </form>
-        )}
-
-        {/* SMS Login Form - Enter Phone */}
-        {loginMethod === "sms" && !smsSent && (
-          <form onSubmit={handleSendSMS} style={styles.form}>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Phone Number</label>
-              <div style={styles.inputWrapper}>
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={(e) => setPhone(formatPhone(e.target.value))}
-                  placeholder="(615) 555-0123"
-                  style={styles.input}
-                  className="login-input"
-                  maxLength={14}
-                  autoFocus
-                />
-                <span style={styles.inputIcon}>📱</span>
-              </div>
-              <p style={styles.inputHint}>We will send a 6-digit verification code</p>
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Password</label>
+            <div style={styles.inputWrapper}>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                style={styles.input}
+                className="login-input"
+                autoComplete="current-password"
+              />
+              <span style={styles.inputIcon}>🔒</span>
             </div>
+          </div>
 
-            <button
-              type="submit"
-              disabled={isLoading || phone.length < 14}
-              style={{
-                ...styles.primaryButton,
-                opacity: isLoading || phone.length < 14 ? 0.6 : 1,
-                cursor: isLoading || phone.length < 14 ? "not-allowed" : "pointer",
-              }}
-              className="login-btn"
-            >
-              {isLoading ? (
-                <span style={styles.loadingSpinner}>
-                  <span style={styles.spinner} /> Sending code...
-                </span>
-              ) : (
-                <>Send Verification Code <span style={{ marginLeft: 8 }}>📨</span></>
-              )}
-            </button>
-          </form>
-        )}
+          <button
+            type="submit"
+            disabled={isLoading || !email || !password}
+            style={{
+              ...styles.primaryButton,
+              opacity: isLoading || !email || !password ? 0.6 : 1,
+              cursor: isLoading || !email || !password ? "not-allowed" : "pointer",
+            }}
+            className="login-btn"
+          >
+            {isLoading ? (
+              <span style={styles.loadingSpinner}>
+                <span style={styles.spinner} /> Signing in...
+              </span>
+            ) : (
+              <>Sign In <span style={{ marginLeft: 8 }}>→</span></>
+            )}
+          </button>
 
-        {/* SMS Login Form - Enter Code */}
-        {loginMethod === "sms" && smsSent && (
-          <form onSubmit={handleVerifySMS} style={styles.form}>
-            <div style={styles.smsConfirmation}>
-              <div style={styles.smsIcon}>📬</div>
-              <p style={styles.smsText}>
-                Code sent to <strong>{phone}</strong>
-              </p>
-              <button 
-                type="button" 
-                onClick={() => setSmsSent(false)}
-                style={styles.changeNumber}
-              >
-                Change number
-              </button>
-            </div>
-
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Verification Code</label>
-              <div style={styles.codeInputContainer}>
-                {[0, 1, 2, 3, 4, 5].map((index) => (
-                  <input
-                    key={index}
-                    type="text"
-                    maxLength={1}
-                    value={verificationCode[index] || ""}
-                    onChange={(e) => {
-                      const val = e.target.value.replace(/\D/g, "");
-                      const newCode = verificationCode.split("");
-                      newCode[index] = val;
-                      setVerificationCode(newCode.join("").slice(0, 6));
-                      if (val && index < 5) {
-                        const next = e.target.parentElement?.children[index + 1] as HTMLInputElement;
-                        next?.focus();
-                      }
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Backspace" && !verificationCode[index] && index > 0) {
-                        const prev = (e.target as HTMLElement).parentElement?.children[index - 1] as HTMLInputElement;
-                        prev?.focus();
-                      }
-                    }}
-                    style={styles.codeInput}
-                    className="login-input"
-                    autoFocus={index === 0}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              disabled={isLoading || verificationCode.length < 6}
-              style={{
-                ...styles.primaryButton,
-                opacity: isLoading || verificationCode.length < 6 ? 0.6 : 1,
-                cursor: isLoading || verificationCode.length < 6 ? "not-allowed" : "pointer",
-              }}
-              className="login-btn"
-            >
-              {isLoading ? (
-                <span style={styles.loadingSpinner}>
-                  <span style={styles.spinner} /> Verifying...
-                </span>
-              ) : (
-                <>Verify & Sign In <span style={{ marginLeft: 8 }}>✓</span></>
-              )}
-            </button>
-
-            <button
-              type="button"
-              onClick={handleSendSMS}
-              style={styles.resendCode}
-              className="forgot-link"
-              disabled={isLoading}
-            >
-              Didn't receive the code? <span style={{ color: "#dc2626", fontWeight: 600 }}>Resend</span>
-            </button>
-          </form>
-        )}
+          <button
+            type="button"
+            onClick={() => { setShowForgotPassword(true); setForgotEmail(email); }}
+            style={styles.forgotPassword}
+            className="forgot-link"
+          >
+            Forgot your password?
+          </button>
+        </form>
 
         {/* Security Note */}
         <div style={styles.securityNote}>
@@ -498,6 +333,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: "8px 12px",
     borderRadius: 8,
     transition: "all 0.2s",
+    zIndex: 10,
   },
   logoContainer: {
     display: "flex",
@@ -525,41 +361,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: "#94a3b8",
     fontSize: 16,
     textAlign: "center",
-    margin: "0 0 36px 0",
+    margin: "0 0 32px 0",
     fontWeight: 400,
-  },
-  tabContainer: {
-    display: "flex",
-    gap: 8,
-    marginBottom: 28,
-    padding: 6,
-    backgroundColor: "rgba(30, 41, 59, 0.5)",
-    borderRadius: 14,
-    border: "1px solid rgba(255, 255, 255, 0.05)",
-  },
-  tab: {
-    flex: 1,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    padding: "14px 18px",
-    backgroundColor: "transparent",
-    border: "none",
-    borderRadius: 10,
-    color: "#94a3b8",
-    fontSize: 14,
-    fontWeight: 500,
-    cursor: "pointer",
-    transition: "all 0.2s",
-  },
-  tabActive: {
-    backgroundColor: "rgba(220, 38, 38, 0.15)",
-    color: "#fff",
-    boxShadow: "0 2px 8px rgba(220, 38, 38, 0.2)",
-  },
-  tabIcon: {
-    fontSize: 18,
   },
   errorContainer: {
     display: "flex",
@@ -579,12 +382,12 @@ const styles: { [key: string]: React.CSSProperties } = {
   form: {
     display: "flex",
     flexDirection: "column",
-    gap: 22,
+    gap: 20,
   },
   inputGroup: {
     display: "flex",
     flexDirection: "column",
-    gap: 10,
+    gap: 8,
   },
   label: {
     color: "#e2e8f0",
@@ -616,11 +419,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: 20,
     opacity: 0.4,
   },
-  inputHint: {
-    color: "#64748b",
-    fontSize: 13,
-    margin: 0,
-  },
   primaryButton: {
     display: "flex",
     alignItems: "center",
@@ -636,6 +434,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     transition: "all 0.25s ease",
     boxShadow: "0 4px 16px rgba(220, 38, 38, 0.35)",
     letterSpacing: "0.3px",
+    marginTop: 8,
   },
   loadingSpinner: {
     display: "flex",
@@ -660,59 +459,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: 10,
     textAlign: "center",
     transition: "color 0.2s",
-  },
-  smsConfirmation: {
-    textAlign: "center",
-    padding: "20px",
-    backgroundColor: "rgba(34, 197, 94, 0.08)",
-    border: "1px solid rgba(34, 197, 94, 0.2)",
-    borderRadius: 14,
-    marginBottom: 8,
-  },
-  smsIcon: {
-    fontSize: 36,
-    marginBottom: 10,
-  },
-  smsText: {
-    color: "#a7f3d0",
-    fontSize: 15,
-    margin: "0 0 10px 0",
-  },
-  changeNumber: {
-    background: "none",
-    border: "none",
-    color: "#64748b",
-    fontSize: 13,
-    cursor: "pointer",
-    textDecoration: "underline",
-    textUnderlineOffset: "3px",
-  },
-  codeInputContainer: {
-    display: "flex",
-    gap: 10,
-    justifyContent: "center",
-  },
-  codeInput: {
-    width: 52,
-    height: 62,
-    textAlign: "center",
-    fontSize: 26,
-    fontWeight: 700,
-    backgroundColor: "rgba(30, 41, 59, 0.6)",
-    border: "2px solid rgba(71, 85, 105, 0.4)",
-    borderRadius: 12,
-    color: "#fff",
-    outline: "none",
-    transition: "all 0.25s ease",
-  },
-  resendCode: {
-    background: "none",
-    border: "none",
-    color: "#94a3b8",
-    fontSize: 14,
-    cursor: "pointer",
-    padding: 10,
-    textAlign: "center",
   },
   securityNote: {
     display: "flex",
