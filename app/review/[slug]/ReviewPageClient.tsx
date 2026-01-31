@@ -94,199 +94,521 @@ export default function ReviewPageClient({
     }
   };
 
-  const buttonStyle = (bg: string, color: string = "white") => ({
-    display: "block",
-    width: "100%",
-    textAlign: "center" as const,
-    padding: "14px 20px",
-    borderRadius: 12,
-    border: "none",
-    fontWeight: 600,
-    fontSize: 15,
-    background: bg,
-    color,
-    marginBottom: 10,
-    cursor: "pointer",
-    textDecoration: "none",
-  });
-
-  const secondaryButtonStyle = {
-    ...buttonStyle("#fff", "#333"),
-    border: "1px solid #ddd",
-  };
+  const firstName = displayName.split(" ")[0];
 
   return (
-    <main style={{ maxWidth: 520, margin: "0 auto", padding: "20px", fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', minHeight: "100vh", background: "linear-gradient(180deg, #fff 0%, #f8f9fa 100%)" }}>
-      
-      {/* Header Logos */}
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 16, marginBottom: 20, flexWrap: "wrap" }}>
-        <img src="/gallatin-cdjr-logo.png" alt="Gallatin CDJR" style={{ height: 40, objectFit: "contain" }} />
-        <img src="/we-auto-logo.png" alt="WE Auto" style={{ height: 36, objectFit: "contain" }} />
-      </div>
+    <div style={{ minHeight: "100vh", backgroundColor: "#f8fafc" }}>
+      {/* Hero Header */}
+      <div style={{
+        background: "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)",
+        padding: "32px 20px 40px",
+        textAlign: "center",
+        position: "relative",
+        overflow: "hidden"
+      }}>
+        {/* Subtle pattern overlay */}
+        <div style={{
+          position: "absolute",
+          inset: 0,
+          backgroundImage: "radial-gradient(circle at 25% 25%, rgba(255,255,255,0.03) 0%, transparent 50%)",
+          pointerEvents: "none"
+        }} />
+        
+        {/* Logo Row */}
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 24, marginBottom: 24, position: "relative" }}>
+          <img src="/gallatin-cdjr-logo.png" alt="Gallatin CDJR" style={{ height: 50, objectFit: "contain" }} />
+          <div style={{ width: 1, height: 40, backgroundColor: "rgba(255,255,255,0.2)" }} />
+          <img src="/we-auto-logo.png" alt="WE Auto" style={{ height: 44, objectFit: "contain" }} />
+        </div>
 
-      {/* Thank You Section */}
-      <div style={{ textAlign: "center", marginBottom: 20 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: "#111", marginBottom: 8 }}>
-          Thank You for Choosing Us!
+        {/* Welcome Text */}
+        <h1 style={{
+          color: "#ffffff",
+          fontSize: 28,
+          fontWeight: 700,
+          margin: "0 0 8px 0",
+          fontFamily: "system-ui, -apple-system, sans-serif",
+          letterSpacing: "-0.5px",
+          position: "relative"
+        }}>
+          Welcome to the Family! 🎉
         </h1>
-        <p style={{ fontSize: 15, color: "#555", lineHeight: 1.5 }}>
-          If <strong>{displayName}</strong> helped you today, we'd love a quick Google review!
+        <p style={{
+          color: "rgba(255,255,255,0.7)",
+          fontSize: 15,
+          margin: 0,
+          position: "relative"
+        }}>
+          Thank you for choosing Gallatin CDJR
         </p>
       </div>
 
-      {/* Primary CTA - Google Review */}
-      <button onClick={handleReviewClick} style={{ ...buttonStyle("#D10000"), fontSize: 16, padding: "16px 20px", boxShadow: "0 4px 12px rgba(209,0,0,0.3)" }}>
-        ⭐ Leave a 5-Star Google Review
-      </button>
+      {/* Main Content */}
+      <div style={{ maxWidth: 480, margin: "0 auto", padding: "0 16px 32px" }}>
+        
+        {/* Review Card - Floating */}
+        <div style={{
+          backgroundColor: "#ffffff",
+          borderRadius: 16,
+          padding: 24,
+          marginTop: -24,
+          boxShadow: "0 4px 24px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)",
+          position: "relative",
+          zIndex: 10
+        }}>
+          <div style={{ textAlign: "center", marginBottom: 20 }}>
+            <div style={{
+              width: 56,
+              height: 56,
+              backgroundColor: "#fef3c7",
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "0 auto 12px",
+              fontSize: 28
+            }}>
+              ⭐
+            </div>
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: "#0f172a", margin: "0 0 6px 0" }}>
+              How was your experience?
+            </h2>
+            <p style={{ fontSize: 14, color: "#64748b", margin: 0, lineHeight: 1.5 }}>
+              If <strong style={{ color: "#0f172a" }}>{displayName}</strong> made your day, a quick review means the world to us!
+            </p>
+          </div>
 
-      {/* Review Starters */}
-      <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 12, padding: 16, marginBottom: 20 }}>
-        <p style={{ fontWeight: 600, fontSize: 14, color: "#333", marginBottom: 10 }}>Quick review starters:</p>
-        <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13, color: "#555", lineHeight: 1.7 }}>
-          <li>"Smooth, professional experience from start to finish."</li>
-          <li>"{displayName} was helpful, honest, and easy to work with."</li>
-          <li>"Great communication and stress-free purchase."</li>
-        </ul>
-      </div>
+          <button
+            onClick={handleReviewClick}
+            style={{
+              width: "100%",
+              padding: "16px 24px",
+              backgroundColor: "#dc2626",
+              color: "#ffffff",
+              border: "none",
+              borderRadius: 12,
+              fontSize: 16,
+              fontWeight: 700,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+              boxShadow: "0 4px 14px rgba(220, 38, 38, 0.4)",
+              transition: "transform 0.2s, box-shadow 0.2s"
+            }}
+          >
+            <span style={{ fontSize: 18 }}>⭐</span>
+            Leave a 5-Star Review
+          </button>
 
-      {/* Worry Free Guarantee Banner */}
-      <div style={{ marginBottom: 20, textAlign: "center" }}>
-        <img src="https://res.cloudinary.com/di5ujiwjp/image/upload/v1769644367/Worry_Free_Guarantee_Banner_Graphic_Logo_nw2hmr.png" alt="Worry Free Guarantee" style={{ maxWidth: "100%", borderRadius: 8 }} />
-      </div>
+          {/* Quick Starters */}
+          <div style={{ marginTop: 16, padding: 16, backgroundColor: "#f8fafc", borderRadius: 10 }}>
+            <p style={{ fontSize: 12, fontWeight: 600, color: "#64748b", margin: "0 0 8px 0", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+              Copy & Paste Starters
+            </p>
+            <div style={{ fontSize: 13, color: "#475569", lineHeight: 1.7 }}>
+              <p style={{ margin: "0 0 6px 0" }}>• "Smooth, professional experience!"</p>
+              <p style={{ margin: "0 0 6px 0" }}>• "{firstName} was amazing to work with."</p>
+              <p style={{ margin: 0 }}>• "Highly recommend Gallatin CDJR!"</p>
+            </div>
+          </div>
+        </div>
 
-      {/* Section: Stay Connected */}
-      <div style={{ marginBottom: 20 }}>
-        <h2 style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 12, borderBottom: "2px solid #D10000", paddingBottom: 6, display: "inline-block" }}>📱 Stay Connected</h2>
-        
-        {phone && (
-          <a href={`tel:${phone.replace(/[^0-9]/g, "")}`} style={secondaryButtonStyle}>
-            📞 Call/Text {displayName}
-          </a>
-        )}
-        
-        <a href={`/api/vcard/${slug}`} onClick={() => handleContactSave("contact")} style={secondaryButtonStyle}>
-          📇 Save {displayName}'s Contact
-        </a>
-        
-        <a href="/api/vcard/accessories" onClick={() => handleContactSave("accessories")} style={secondaryButtonStyle}>
-          🎨 Save Accessories Contact (Wesley)
-        </a>
-        
-        <a href="/api/vcard/service" onClick={() => handleContactSave("service")} style={secondaryButtonStyle}>
-          🔧 Save Service Department Contact
-        </a>
-      </div>
+        {/* Worry Free Banner */}
+        <div style={{
+          marginTop: 20,
+          borderRadius: 12,
+          overflow: "hidden",
+          boxShadow: "0 2px 12px rgba(0,0,0,0.06)"
+        }}>
+          <img 
+            src="https://res.cloudinary.com/di5ujiwjp/image/upload/v1769644367/Worry_Free_Guarantee_Banner_Graphic_Logo_nw2hmr.png" 
+            alt="Worry Free Guarantee" 
+            style={{ width: "100%", display: "block" }} 
+          />
+        </div>
 
-      {/* Section: Service Your Vehicle */}
-      <div style={{ marginBottom: 20 }}>
-        <h2 style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 12, borderBottom: "2px solid #D10000", paddingBottom: 6, display: "inline-block" }}>🚗 Service Your Vehicle</h2>
-        
-        <a href="https://www.gallatincdjr.com/service/schedule/" target="_blank" onClick={() => trackEvent("schedule_service_click")} style={buttonStyle("#1e40af")}>
-          🔧 Schedule Your 1st Service
-        </a>
-        
-        <button onClick={() => setShowCalendarOptions(!showCalendarOptions)} style={secondaryButtonStyle}>
-          📅 Add Service Reminders to Calendar
-        </button>
-        
-        {showCalendarOptions && (
-          <div style={{ background: "#f9fafb", border: "1px solid #e5e7eb", borderRadius: 8, padding: 12, marginTop: -5, marginBottom: 10 }}>
-            <button onClick={() => handleCalendarDownload("ics")} style={{ ...secondaryButtonStyle, marginBottom: 8 }}>
-              🍎 Apple Calendar / Outlook
+        {/* Your Contacts Section */}
+        <div style={{ marginTop: 28 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+            <div style={{ width: 32, height: 32, backgroundColor: "#dbeafe", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>📱</div>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#0f172a", margin: 0 }}>Your Contacts</h3>
+          </div>
+          
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {phone && (
+              <a href={`tel:${phone.replace(/[^0-9]/g, "")}`} style={cardButtonStyle}>
+                <span style={iconBadgeStyle("#dcfce7")}>📞</span>
+                <span style={{ flex: 1 }}>Call or Text {firstName}</span>
+                <span style={{ color: "#94a3b8", fontSize: 18 }}>→</span>
+              </a>
+            )}
+            
+            <a href={`/api/vcard/${slug}`} onClick={() => handleContactSave("contact")} style={cardButtonStyle}>
+              <span style={iconBadgeStyle("#e0e7ff")}>👤</span>
+              <span style={{ flex: 1 }}>Save {firstName}'s Contact</span>
+              <span style={{ color: "#94a3b8", fontSize: 18 }}>↓</span>
+            </a>
+            
+            <a href="/api/vcard/accessories" onClick={() => handleContactSave("accessories")} style={cardButtonStyle}>
+              <span style={iconBadgeStyle("#fce7f3")}>🎨</span>
+              <span style={{ flex: 1 }}>Save Accessories (Wesley)</span>
+              <span style={{ color: "#94a3b8", fontSize: 18 }}>↓</span>
+            </a>
+            
+            <a href="/api/vcard/service" onClick={() => handleContactSave("service")} style={cardButtonStyle}>
+              <span style={iconBadgeStyle("#ffedd5")}>🔧</span>
+              <span style={{ flex: 1 }}>Save Service Department</span>
+              <span style={{ color: "#94a3b8", fontSize: 18 }}>↓</span>
+            </a>
+          </div>
+        </div>
+
+        {/* Service Section */}
+        <div style={{ marginTop: 28 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+            <div style={{ width: 32, height: 32, backgroundColor: "#fef3c7", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>🚗</div>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#0f172a", margin: 0 }}>Keep Your Vehicle Happy</h3>
+          </div>
+          
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <a href="https://www.gallatincdjr.com/scheduleservice" target="_blank" onClick={() => trackEvent("schedule_service_click")} style={{...cardButtonStyle, backgroundColor: "#1e40af", color: "#fff", border: "none"}}>
+              <span style={iconBadgeStyle("#ffffff")}>📅</span>
+              <span style={{ flex: 1, fontWeight: 600 }}>Schedule Your First Service</span>
+              <span style={{ fontSize: 18 }}>→</span>
+            </a>
+            
+            <button onClick={() => setShowCalendarOptions(!showCalendarOptions)} style={cardButtonStyle as React.CSSProperties}>
+              <span style={iconBadgeStyle("#dbeafe")}>🔔</span>
+              <span style={{ flex: 1, textAlign: "left" }}>Add Service Reminders</span>
+              <span style={{ color: "#94a3b8", fontSize: 14 }}>{showCalendarOptions ? "▲" : "▼"}</span>
             </button>
-            <button onClick={() => handleCalendarDownload("google")} style={{ ...secondaryButtonStyle, marginBottom: 0 }}>
-              📆 Google Calendar
+            
+            {showCalendarOptions && (
+              <div style={{ backgroundColor: "#f1f5f9", borderRadius: 10, padding: 12, display: "flex", flexDirection: "column", gap: 8 }}>
+                <button onClick={() => handleCalendarDownload("ics")} style={miniButtonStyle}>
+                  🍎 Apple Calendar / Outlook
+                </button>
+                <button onClick={() => handleCalendarDownload("google")} style={miniButtonStyle}>
+                  📆 Google Calendar
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Referral Section */}
+        <div style={{ marginTop: 28 }}>
+          <div style={{
+            background: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
+            borderRadius: 16,
+            padding: 24,
+            textAlign: "center",
+            color: "#ffffff"
+          }}>
+            <div style={{ fontSize: 32, marginBottom: 8 }}>🎁</div>
+            <h3 style={{ fontSize: 18, fontWeight: 700, margin: "0 0 6px 0" }}>Share the Love</h3>
+            <p style={{ fontSize: 14, opacity: 0.9, margin: "0 0 16px 0" }}>
+              Refer friends & family — everyone wins!
+            </p>
+            <button
+              onClick={() => setShowReferralModal(true)}
+              style={{
+                backgroundColor: "#ffffff",
+                color: "#059669",
+                border: "none",
+                borderRadius: 10,
+                padding: "12px 24px",
+                fontSize: 15,
+                fontWeight: 700,
+                cursor: "pointer",
+                width: "100%"
+              }}
+            >
+              Get Your Referral Link
             </button>
           </div>
-        )}
-      </div>
-
-      {/* Section: Refer a Friend */}
-      <div style={{ marginBottom: 20 }}>
-        <h2 style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 12, borderBottom: "2px solid #D10000", paddingBottom: 6, display: "inline-block" }}>🎁 Refer a Friend</h2>
-        
-        <button onClick={() => setShowReferralModal(true)} style={buttonStyle("#22c55e")}>
-          💰 Refer a Friend & Earn Rewards
-        </button>
-      </div>
-
-      {/* Section: Follow Us */}
-      <div style={{ marginBottom: 20 }}>
-        <h2 style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 12, borderBottom: "2px solid #D10000", paddingBottom: 6, display: "inline-block" }}>📸 Follow Us</h2>
-        
-        <div style={{ display: "flex", justifyContent: "center", gap: 12 }}>
-          <button onClick={() => handleSocialClick("facebook", "https://facebook.com/gallatincdjr")} style={{ width: 56, height: 56, borderRadius: 12, backgroundColor: "#1877F2", color: "white", border: "none", fontSize: 22, cursor: "pointer", fontWeight: 700 }}>f</button>
-          <button onClick={() => handleSocialClick("instagram", "https://instagram.com/gallatincdjr")} style={{ width: 56, height: 56, borderRadius: 12, background: "linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)", color: "white", border: "none", fontSize: 22, cursor: "pointer" }}>📷</button>
-          <button onClick={() => handleSocialClick("tiktok", "https://tiktok.com/@gallatin.cdjr")} style={{ width: 56, height: 56, borderRadius: 12, backgroundColor: "#000", color: "white", border: "none", fontSize: 22, cursor: "pointer" }}>♪</button>
         </div>
-        <p style={{ textAlign: "center", fontSize: 12, color: "#888", marginTop: 8 }}>Share your new ride with #GallatinCDJR</p>
-      </div>
 
-      {/* Section: Resources */}
-      <div style={{ marginBottom: 20 }}>
-        <h2 style={{ fontSize: 16, fontWeight: 700, color: "#111", marginBottom: 12, borderBottom: "2px solid #D10000", paddingBottom: 6, display: "inline-block" }}>📋 Helpful Resources</h2>
-        
-        <a href="https://www.gallatincdjr.com/value-your-trade/" target="_blank" style={secondaryButtonStyle}>
-          🔄 Check Your Trade-In Value
-        </a>
-        <a href="https://www.mopar.com/en-us/my-vehicle.html" target="_blank" style={secondaryButtonStyle}>
-          📖 Owner Resources & Manuals
-        </a>
-        <a href="https://www.gallatincdjr.com/parts-accessories/" target="_blank" style={secondaryButtonStyle}>
-          🛒 Shop Accessories
-        </a>
-      </div>
+        {/* Social Section */}
+        <div style={{ marginTop: 28 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+            <div style={{ width: 32, height: 32, backgroundColor: "#fae8ff", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>📸</div>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#0f172a", margin: 0 }}>Follow the Journey</h3>
+          </div>
+          
+          <div style={{ display: "flex", gap: 10 }}>
+            <button onClick={() => handleSocialClick("facebook", "https://facebook.com/gallatincdjr")} style={socialButtonStyle("#1877F2")}>
+              <span style={{ fontSize: 22, fontWeight: 700 }}>f</span>
+            </button>
+            <button onClick={() => handleSocialClick("instagram", "https://instagram.com/gallatincdjr")} style={{...socialButtonStyle(""), background: "linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888)"}}>
+              <span style={{ fontSize: 20 }}>📷</span>
+            </button>
+            <button onClick={() => handleSocialClick("tiktok", "https://tiktok.com/@gallatin.cdjr")} style={socialButtonStyle("#000000")}>
+              <span style={{ fontSize: 20 }}>♪</span>
+            </button>
+          </div>
+          <p style={{ fontSize: 12, color: "#94a3b8", marginTop: 10, textAlign: "center" }}>
+            Share your new ride! 📸 <span style={{ color: "#64748b" }}>#GallatinCDJR</span>
+          </p>
+        </div>
 
-      {/* Footer Logos */}
-      <div style={{ textAlign: "center", paddingTop: 20, borderTop: "1px solid #e5e7eb" }}>
-        <img src="/worry-free-logo.png" alt="Worry Free Guarantee" style={{ height: 80, marginBottom: 12 }} />
-        <p style={{ fontSize: 11, color: "#888" }}>Part of the WE Auto Family</p>
-        <p style={{ fontSize: 11, color: "#888", marginTop: 4 }}>1550 Nashville Pike, Gallatin, TN 37066</p>
+        {/* Resources Section */}
+        <div style={{ marginTop: 28 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+            <div style={{ width: 32, height: 32, backgroundColor: "#e0e7ff", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>📋</div>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: "#0f172a", margin: 0 }}>Helpful Resources</h3>
+          </div>
+          
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            <a href="https://www.gallatincdjr.com/value-your-trade/" target="_blank" style={resourceCardStyle}>
+              <span style={{ fontSize: 20, marginBottom: 4 }}>🔄</span>
+              <span style={{ fontSize: 12, fontWeight: 600 }}>Trade-In Value</span>
+            </a>
+            <a href="https://www.mopar.com/en-us/my-vehicle.html" target="_blank" style={resourceCardStyle}>
+              <span style={{ fontSize: 20, marginBottom: 4 }}>📖</span>
+              <span style={{ fontSize: 12, fontWeight: 600 }}>Owner Resources</span>
+            </a>
+            <a href="https://www.gallatincdjr.com/parts-accessories/" target="_blank" style={resourceCardStyle}>
+              <span style={{ fontSize: 20, marginBottom: 4 }}>🛒</span>
+              <span style={{ fontSize: 12, fontWeight: 600 }}>Shop Parts</span>
+            </a>
+            <a href="https://www.gallatincdjr.com/new-inventory/" target="_blank" style={resourceCardStyle}>
+              <span style={{ fontSize: 20, marginBottom: 4 }}>🚘</span>
+              <span style={{ fontSize: 12, fontWeight: 600 }}>New Inventory</span>
+            </a>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div style={{ marginTop: 32, textAlign: "center" }}>
+          <div style={{
+            background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
+            borderRadius: 16,
+            padding: 20,
+            marginBottom: 16
+          }}>
+            <img src="/worry-free-logo.png" alt="Worry Free Guarantee" style={{ height: 70, marginBottom: 8 }} />
+            <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 12, margin: 0 }}>Your purchase is protected.</p>
+          </div>
+          
+          <p style={{ fontSize: 12, color: "#94a3b8", margin: "0 0 4px 0" }}>
+            Part of the <strong style={{ color: "#64748b" }}>WE Auto</strong> Family
+          </p>
+          <p style={{ fontSize: 11, color: "#94a3b8", margin: 0 }}>
+            1290 Nashville Pike, Gallatin, TN 37066
+          </p>
+          <p style={{ fontSize: 11, color: "#cbd5e1", marginTop: 8 }}>
+            Sales: Mon-Sat 9AM-8PM • Service: Mon-Fri 7:30AM-6PM
+          </p>
+        </div>
       </div>
 
       {/* Referral Modal */}
       {showReferralModal && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: 20 }}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: 24, maxWidth: 400, width: "100%" }}>
-            <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16 }}>🎁 Refer a Friend</h3>
+        <div style={{
+          position: "fixed",
+          inset: 0,
+          backgroundColor: "rgba(0,0,0,0.6)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1000,
+          padding: 20,
+          backdropFilter: "blur(4px)"
+        }}>
+          <div style={{
+            backgroundColor: "#ffffff",
+            borderRadius: 20,
+            padding: 28,
+            maxWidth: 380,
+            width: "100%",
+            boxShadow: "0 25px 50px rgba(0,0,0,0.25)"
+          }}>
+            <div style={{ textAlign: "center", marginBottom: 20 }}>
+              <div style={{ fontSize: 40, marginBottom: 8 }}>🎁</div>
+              <h3 style={{ fontSize: 22, fontWeight: 700, color: "#0f172a", margin: "0 0 4px 0" }}>
+                Refer a Friend
+              </h3>
+              <p style={{ fontSize: 14, color: "#64748b", margin: 0 }}>
+                Share {firstName}'s info with someone special
+              </p>
+            </div>
             
             {!referralLink ? (
               <>
-                <p style={{ fontSize: 14, color: "#555", marginBottom: 16 }}>
-                  Share {displayName}'s contact with friends and family. When they buy, you both win!
-                </p>
                 <input
                   type="text"
                   placeholder="Your name (optional)"
                   value={referrerName}
                   onChange={(e) => setReferrerName(e.target.value)}
-                  style={{ width: "100%", padding: 12, borderRadius: 8, border: "1px solid #ddd", marginBottom: 12, fontSize: 15 }}
+                  style={{
+                    width: "100%",
+                    padding: 14,
+                    borderRadius: 10,
+                    border: "2px solid #e2e8f0",
+                    marginBottom: 12,
+                    fontSize: 15,
+                    outline: "none",
+                    boxSizing: "border-box"
+                  }}
                 />
-                <button onClick={handleCreateReferral} style={{ ...buttonStyle("#22c55e"), marginBottom: 8 }}>
-                  Generate My Referral Link
+                <button
+                  onClick={handleCreateReferral}
+                  style={{
+                    width: "100%",
+                    padding: 14,
+                    backgroundColor: "#059669",
+                    color: "#ffffff",
+                    border: "none",
+                    borderRadius: 10,
+                    fontSize: 15,
+                    fontWeight: 700,
+                    cursor: "pointer"
+                  }}
+                >
+                  Generate My Link
                 </button>
               </>
             ) : (
               <>
-                <p style={{ fontSize: 14, color: "#555", marginBottom: 12 }}>Your personal referral link:</p>
-                <div style={{ background: "#f3f4f6", padding: 12, borderRadius: 8, marginBottom: 12, wordBreak: "break-all", fontSize: 13 }}>
+                <div style={{
+                  backgroundColor: "#f1f5f9",
+                  padding: 14,
+                  borderRadius: 10,
+                  marginBottom: 12,
+                  wordBreak: "break-all",
+                  fontSize: 13,
+                  color: "#475569",
+                  fontFamily: "monospace"
+                }}>
                   {referralLink}
                 </div>
-                <button onClick={handleShareReferral} style={{ ...buttonStyle("#22c55e"), marginBottom: 8 }}>
-                  📤 Share Link
-                </button>
-                <button onClick={handleCopyReferral} style={{ ...buttonStyle("#1e40af"), marginBottom: 8 }}>
-                  {copied ? "✓ Copied!" : "📋 Copy Link"}
-                </button>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button
+                    onClick={handleShareReferral}
+                    style={{
+                      flex: 1,
+                      padding: 14,
+                      backgroundColor: "#059669",
+                      color: "#ffffff",
+                      border: "none",
+                      borderRadius: 10,
+                      fontSize: 14,
+                      fontWeight: 600,
+                      cursor: "pointer"
+                    }}
+                  >
+                    📤 Share
+                  </button>
+                  <button
+                    onClick={handleCopyReferral}
+                    style={{
+                      flex: 1,
+                      padding: 14,
+                      backgroundColor: "#1e40af",
+                      color: "#ffffff",
+                      border: "none",
+                      borderRadius: 10,
+                      fontSize: 14,
+                      fontWeight: 600,
+                      cursor: "pointer"
+                    }}
+                  >
+                    {copied ? "✓ Copied!" : "📋 Copy"}
+                  </button>
+                </div>
               </>
             )}
             
-            <button onClick={() => { setShowReferralModal(false); setReferralLink(""); }} style={{ ...secondaryButtonStyle, marginBottom: 0 }}>
+            <button
+              onClick={() => { setShowReferralModal(false); setReferralLink(""); }}
+              style={{
+                width: "100%",
+                marginTop: 12,
+                padding: 12,
+                backgroundColor: "transparent",
+                color: "#64748b",
+                border: "1px solid #e2e8f0",
+                borderRadius: 10,
+                fontSize: 14,
+                cursor: "pointer"
+              }}
+            >
               Close
             </button>
           </div>
         </div>
       )}
-    </main>
+    </div>
   );
 }
+
+// Style helpers
+const cardButtonStyle: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  gap: 12,
+  padding: "14px 16px",
+  backgroundColor: "#ffffff",
+  border: "1px solid #e2e8f0",
+  borderRadius: 12,
+  fontSize: 14,
+  fontWeight: 500,
+  color: "#1e293b",
+  textDecoration: "none",
+  cursor: "pointer",
+  transition: "all 0.2s",
+  width: "100%",
+  boxSizing: "border-box"
+};
+
+const iconBadgeStyle = (bg: string): React.CSSProperties => ({
+  width: 36,
+  height: 36,
+  backgroundColor: bg,
+  borderRadius: 10,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: 16,
+  flexShrink: 0
+});
+
+const miniButtonStyle: React.CSSProperties = {
+  padding: "12px 16px",
+  backgroundColor: "#ffffff",
+  border: "1px solid #e2e8f0",
+  borderRadius: 8,
+  fontSize: 14,
+  cursor: "pointer",
+  textAlign: "left" as const
+};
+
+const socialButtonStyle = (bg: string): React.CSSProperties => ({
+  flex: 1,
+  height: 52,
+  backgroundColor: bg,
+  border: "none",
+  borderRadius: 12,
+  color: "#ffffff",
+  cursor: "pointer",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center"
+});
+
+const resourceCardStyle: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  padding: 16,
+  backgroundColor: "#ffffff",
+  border: "1px solid #e2e8f0",
+  borderRadius: 12,
+  textDecoration: "none",
+  color: "#1e293b",
+  transition: "all 0.2s"
+};
