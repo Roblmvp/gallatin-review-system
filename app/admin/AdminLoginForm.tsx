@@ -117,8 +117,6 @@ export default function AdminLoginForm({ onLogin, onSMSLogin, error }: Props) {
               src="https://res.cloudinary.com/di5ujiwjp/image/upload/v1769890652/ADMIN_DASHBOARD_LOGO_y5febx.png" 
               alt="Gallatin CDJR Admin" 
               style={styles.logo}
-              width={280}
-              height={80}
               loading="eager"
             />
           </div>
@@ -198,8 +196,6 @@ export default function AdminLoginForm({ onLogin, onSMSLogin, error }: Props) {
             src="https://res.cloudinary.com/di5ujiwjp/image/upload/v1769890652/ADMIN_DASHBOARD_LOGO_y5febx.png" 
             alt="Gallatin CDJR Admin" 
             style={styles.logo}
-            width={280}
-            height={80}
             loading="eager"
           />
         </div>
@@ -483,11 +479,12 @@ const styles: { [key: string]: React.CSSProperties } = {
     backdropFilter: "blur(24px)",
     WebkitBackdropFilter: "blur(24px)",
     borderRadius: 28,
-    padding: "52px 44px",
+    padding: "0 44px 52px 44px",
     width: "100%",
     maxWidth: 440,
     border: "1px solid rgba(255, 255, 255, 0.08)",
     boxShadow: "0 32px 64px -12px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.03) inset",
+    overflow: "hidden",
   },
   backButton: {
     position: "absolute",
@@ -505,14 +502,16 @@ const styles: { [key: string]: React.CSSProperties } = {
   logoContainer: {
     display: "flex",
     justifyContent: "center",
-    marginBottom: 36,
+    marginBottom: 32,
+    marginLeft: -44,
+    marginRight: -44,
+    marginTop: 0,
   },
   logo: {
-    height: 80,
-    width: "auto",
-    maxWidth: 280,
-    objectFit: "contain" as const,
-    filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.3))",
+    width: "100%",
+    height: "auto",
+    objectFit: "cover" as const,
+    display: "block",
   },
   title: {
     color: "#ffffff",
