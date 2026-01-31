@@ -3,8 +3,9 @@
 
 import { supabaseServer } from "@/lib/supabase";
 import { fetchSalespersonRankings, fetchDeliveryStats } from "@/lib/googleSheets";
+import { cookies } from "next/headers";
 import { Metadata } from "next";
-import AdminDashboardClient from "./AdminDashboardClient";
+import AdminPageWrapper from "./AdminPageWrapper";
 
 export const metadata: Metadata = {
   title: "Admin Dashboard | Gallatin CDJR",
@@ -14,6 +15,12 @@ export const metadata: Metadata = {
 // Force dynamic rendering to get fresh data
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
+
+async function checkAuth(): Promise<boolean> {
+  const cookieStore = await cookies();
+  const session = cookieStore.get("admin_session");
+  return !!session?.value;
+}
 
 async function getScoreboardData() {
   const { data: scoreboard } = await supabaseServer
@@ -44,6 +51,8 @@ async function getRecentEvents() {
 }
 
 export default async function AdminPage() {
+  const isAuthenticated = await checkAuth();
+
   const [scoreboard, referrals, recentEvents, salespersonRankings, trackingStats] = await Promise.all([
     getScoreboardData(),
     getReferralData(),
@@ -79,13 +88,14 @@ export default async function AdminPage() {
   );
 
   return (
-    <AdminDashboardClient
+    <AdminPageWrapper
       scoreboard={scoreboard}
       referrals={referrals}
       recentEvents={recentEvents}
       totals={totals}
       salespersonRankings={salespersonRankings}
       trackingStats={trackingStats}
+      isAuthenticated={isAuthenticated}
     />
   );
 }
