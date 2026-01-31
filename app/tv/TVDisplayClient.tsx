@@ -12,11 +12,26 @@ type SalespersonRanking = {
   rank: number;
 };
 
-type Props = {
-  salespersonRankings: SalespersonRanking[];
+type DeliveryStats = {
+  todaysDeliveries: number;
+  mtdNew: number;
+  mtdUsed: number;
+  mtdTotal: number;
+  totalGrossMTD: string;
+  todaysDeals: Array<{
+    customerName: string;
+    salesperson: string;
+    vehicle: string;
+    newUsed: string;
+  }>;
 };
 
-export default function TVDisplayClient({ salespersonRankings }: Props) {
+type Props = {
+  salespersonRankings: SalespersonRanking[];
+  deliveryStats: DeliveryStats;
+};
+
+export default function TVDisplayClient({ salespersonRankings, deliveryStats }: Props) {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [lastRefresh, setLastRefresh] = useState(new Date());
 
@@ -284,7 +299,7 @@ export default function TVDisplayClient({ salespersonRankings }: Props) {
             </div>
           </div>
 
-          {/* Today's Deliveries Placeholder */}
+          {/* Today's Deliveries */}
           <div style={{
             backgroundColor: "#111",
             borderRadius: 16,
@@ -295,17 +310,55 @@ export default function TVDisplayClient({ salespersonRankings }: Props) {
               🚗 Today's Deliveries
             </h3>
             <div style={{ 
-              fontSize: 48, 
+              fontSize: 64, 
               fontWeight: 900, 
-              color: "#22c55e",
+              color: deliveryStats.todaysDeliveries > 0 ? "#22c55e" : "#64748b",
               textAlign: "center",
               marginBottom: 8
             }}>
-              --
+              {deliveryStats.todaysDeliveries}
             </div>
-            <p style={{ fontSize: 12, color: "#64748b", textAlign: "center", margin: 0 }}>
-              Connect delivery log for live count
-            </p>
+            {deliveryStats.todaysDeals.length > 0 && (
+              <div style={{ marginTop: 12, maxHeight: 150, overflowY: "auto" }}>
+                {deliveryStats.todaysDeals.slice(0, 5).map((deal, idx) => (
+                  <div key={idx} style={{
+                    fontSize: 11,
+                    color: "#94a3b8",
+                    padding: "6px 0",
+                    borderTop: idx > 0 ? "1px solid #222" : "none"
+                  }}>
+                    <div style={{ fontWeight: 600, color: "#fff" }}>{deal.vehicle}</div>
+                    <div>{deal.salesperson.split(" / ")[0]}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* MTD Stats */}
+          <div style={{
+            backgroundColor: "#111",
+            borderRadius: 16,
+            padding: 24,
+            border: "1px solid #222"
+          }}>
+            <h3 style={{ fontSize: 14, fontWeight: 700, color: "#64748b", margin: "0 0 16px 0", textTransform: "uppercase", letterSpacing: "1px" }}>
+              📈 MTD Performance
+            </h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 12px", backgroundColor: "#1a1a1a", borderRadius: 8 }}>
+                <span style={{ color: "#94a3b8" }}>New</span>
+                <span style={{ color: "#3b82f6", fontWeight: 700 }}>{deliveryStats.mtdNew}</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 12px", backgroundColor: "#1a1a1a", borderRadius: 8 }}>
+                <span style={{ color: "#94a3b8" }}>Used</span>
+                <span style={{ color: "#f59e0b", fontWeight: 700 }}>{deliveryStats.mtdUsed}</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", padding: "8px 12px", backgroundColor: "#22c55e20", borderRadius: 8, borderLeft: "3px solid #22c55e" }}>
+                <span style={{ color: "#22c55e", fontWeight: 600 }}>Total</span>
+                <span style={{ color: "#22c55e", fontWeight: 800, fontSize: 18 }}>{deliveryStats.mtdTotal}</span>
+              </div>
+            </div>
           </div>
 
           {/* Motivational Quote */}
