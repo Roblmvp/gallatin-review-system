@@ -3,6 +3,7 @@
 
 import { Metadata, Viewport } from "next";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
+import { Analytics } from '@vercel/analytics/next';
 
 export const metadata: Metadata = {
   title: {
@@ -87,6 +88,7 @@ export default function RootLayout({
       >
         {children}
         <PWAInstallPrompt />
+        <Analytics />
       </body>
     </html>
   );
