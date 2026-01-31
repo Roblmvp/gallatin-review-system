@@ -100,30 +100,22 @@ export default function ReviewPageClient({
     <div style={{ minHeight: "100vh", backgroundColor: "#f8fafc" }}>
       {/* Hero Header */}
       <div style={{
-        background: "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)",
+        background: "linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%)",
         padding: "32px 20px 40px",
         textAlign: "center",
         position: "relative",
-        overflow: "hidden"
+        borderBottom: "1px solid #e2e8f0"
       }}>
-        {/* Subtle pattern overlay */}
-        <div style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage: "radial-gradient(circle at 25% 25%, rgba(255,255,255,0.03) 0%, transparent 50%)",
-          pointerEvents: "none"
-        }} />
-        
         {/* Logo Row */}
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 20, marginBottom: 24, position: "relative" }}>
           <img src="https://res.cloudinary.com/di5ujiwjp/image/upload/v1769868303/TAA062407W-GallatinLogos-Web-CDJR-2_yn1fwh.png" alt="Gallatin CDJR" style={{ height: 55, objectFit: "contain" }} />
-          <div style={{ width: 1, height: 40, backgroundColor: "rgba(255,255,255,0.2)" }} />
+          <div style={{ width: 1, height: 40, backgroundColor: "#cbd5e1" }} />
           <img src="https://res.cloudinary.com/di5ujiwjp/image/upload/v1769868289/WE_Auto_Badge_1_f5djzq.png" alt="WE Auto" style={{ height: 50, objectFit: "contain" }} />
         </div>
 
         {/* Welcome Text */}
         <h1 style={{
-          color: "#ffffff",
+          color: "#0f172a",
           fontSize: 28,
           fontWeight: 700,
           margin: "0 0 8px 0",
@@ -134,7 +126,7 @@ export default function ReviewPageClient({
           Welcome to the Family! 🎉
         </h1>
         <p style={{
-          color: "rgba(255,255,255,0.7)",
+          color: "#64748b",
           fontSize: 15,
           margin: 0,
           position: "relative"
@@ -146,12 +138,12 @@ export default function ReviewPageClient({
       {/* Main Content */}
       <div style={{ maxWidth: 480, margin: "0 auto", padding: "0 16px 32px" }}>
         
-        {/* Review Card - Floating */}
+        {/* Review Card */}
         <div style={{
           backgroundColor: "#ffffff",
           borderRadius: 16,
           padding: 24,
-          marginTop: -24,
+          marginTop: 20,
           boxShadow: "0 4px 24px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)",
           position: "relative",
           zIndex: 10
