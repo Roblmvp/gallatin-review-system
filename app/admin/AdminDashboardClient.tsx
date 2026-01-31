@@ -46,11 +46,22 @@ type Totals = {
   calendarDownloads: number;
 };
 
+type SalespersonRanking = {
+  salesperson: string;
+  units_sold: number;
+  total_activity: number;
+  closing_pct: number;
+  google_reviews: number;
+  total_score: number;
+  rank: number;
+};
+
 type Props = {
   scoreboard: ScoreboardRow[];
   referrals: Referral[];
   recentEvents: RecentEvent[];
   totals: Totals;
+  salespersonRankings: SalespersonRanking[];
 };
 
 export default function AdminDashboardClient({
@@ -58,12 +69,18 @@ export default function AdminDashboardClient({
   referrals,
   recentEvents,
   totals,
+  salespersonRankings,
 }: Props) {
-  const [activeTab, setActiveTab] = useState<"scoreboard" | "referrals" | "activity">("scoreboard");
+  const [activeTab, setActiveTab] = useState<"sotm" | "scoreboard" | "referrals" | "activity">("sotm");
 
   const conversionRate = totals.pageViews > 0 
     ? ((totals.ctaClicks / totals.pageViews) * 100).toFixed(1) 
     : "0";
+
+  // Get the leader from rankings
+  const leader = salespersonRankings.length > 0 
+    ? salespersonRankings.sort((a, b) => a.rank - b.rank)[0] 
+    : null;
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#0f172a", color: "#fff" }}>
@@ -79,26 +96,85 @@ export default function AdminDashboardClient({
               <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0 }}>📊 Admin Dashboard</h1>
               <p style={{ fontSize: 14, color: "#94a3b8", margin: "4px 0 0 0" }}>Gallatin CDJR Review System</p>
             </div>
-            <a 
-              href="/review/robert" 
-              target="_blank"
-              style={{
-                padding: "10px 20px",
-                backgroundColor: "#dc2626",
-                color: "#fff",
-                borderRadius: 8,
-                textDecoration: "none",
-                fontSize: 14,
-                fontWeight: 600
-              }}
-            >
-              View Live Page →
-            </a>
+            <div style={{ display: "flex", gap: 12 }}>
+              <a 
+                href="https://docs.google.com/spreadsheets/d/1rqIYaIWK-rqxCwULE4IPibrLAcn8p9hRX_abJn8lR84/edit"
+                target="_blank"
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#22c55e",
+                  color: "#fff",
+                  borderRadius: 8,
+                  textDecoration: "none",
+                  fontSize: 14,
+                  fontWeight: 600
+                }}
+              >
+                📝 Edit Rankings Sheet
+              </a>
+              <a 
+                href="/review/robert" 
+                target="_blank"
+                style={{
+                  padding: "10px 20px",
+                  backgroundColor: "#dc2626",
+                  color: "#fff",
+                  borderRadius: 8,
+                  textDecoration: "none",
+                  fontSize: 14,
+                  fontWeight: 600
+                }}
+              >
+                View Live Page →
+              </a>
+            </div>
           </div>
         </div>
       </div>
 
       <div style={{ maxWidth: 1200, margin: "0 auto", padding: "24px 20px" }}>
+        
+        {/* Current Leader Banner */}
+        {leader && (
+          <div style={{
+            background: "linear-gradient(135deg, #eab308 0%, #f59e0b 100%)",
+            borderRadius: 16,
+            padding: 24,
+            marginBottom: 24,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 16
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+              <div style={{ fontSize: 48 }}>🏆</div>
+              <div>
+                <p style={{ fontSize: 14, color: "#78350f", margin: 0, fontWeight: 600 }}>CURRENT LEADER - SALESPERSON OF THE MONTH</p>
+                <h2 style={{ fontSize: 28, fontWeight: 800, color: "#78350f", margin: "4px 0 0 0" }}>{leader.salesperson}</h2>
+              </div>
+            </div>
+            <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: 24, fontWeight: 700, color: "#78350f" }}>{leader.units_sold}</div>
+                <div style={{ fontSize: 11, color: "#92400e" }}>Units</div>
+              </div>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: 24, fontWeight: 700, color: "#78350f" }}>{leader.google_reviews}</div>
+                <div style={{ fontSize: 11, color: "#92400e" }}>Reviews</div>
+              </div>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: 24, fontWeight: 700, color: "#78350f" }}>{(leader.closing_pct * 100).toFixed(1)}%</div>
+                <div style={{ fontSize: 11, color: "#92400e" }}>Close Rate</div>
+              </div>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: 24, fontWeight: 700, color: "#78350f" }}>{leader.total_score}</div>
+                <div style={{ fontSize: 11, color: "#92400e" }}>Score</div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Stats Cards */}
         <div style={{ 
           display: "grid", 
@@ -128,9 +204,12 @@ export default function AdminDashboardClient({
         </div>
 
         {/* Tabs */}
-        <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+        <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
+          <TabButton active={activeTab === "sotm"} onClick={() => setActiveTab("sotm")}>
+            🏆 Salesperson of the Month
+          </TabButton>
           <TabButton active={activeTab === "scoreboard"} onClick={() => setActiveTab("scoreboard")}>
-            🏆 Leaderboard
+            📊 Review Leaderboard
           </TabButton>
           <TabButton active={activeTab === "referrals"} onClick={() => setActiveTab("referrals")}>
             🎁 Referrals
@@ -140,7 +219,121 @@ export default function AdminDashboardClient({
           </TabButton>
         </div>
 
-        {/* Tab Content */}
+        {/* SOTM Tab */}
+        {activeTab === "sotm" && (
+          <div style={{ backgroundColor: "#1e293b", borderRadius: 12, overflow: "hidden" }}>
+            {salespersonRankings.length === 0 ? (
+              <div style={{ padding: 40, textAlign: "center", color: "#94a3b8" }}>
+                <p>No data found. Make sure your Google Sheet has data in the "Current" tab.</p>
+                <a 
+                  href="https://docs.google.com/spreadsheets/d/1rqIYaIWK-rqxCwULE4IPibrLAcn8p9hRX_abJn8lR84/edit"
+                  target="_blank"
+                  style={{ color: "#3b82f6" }}
+                >
+                  Open Google Sheet →
+                </a>
+              </div>
+            ) : (
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+                  <thead>
+                    <tr style={{ backgroundColor: "#334155" }}>
+                      <th style={thStyle}>Rank</th>
+                      <th style={thStyle}>Salesperson</th>
+                      <th style={thStyle}>Units Sold</th>
+                      <th style={thStyle}>Activity</th>
+                      <th style={thStyle}>Close %</th>
+                      <th style={thStyle}>Google Reviews</th>
+                      <th style={thStyle}>Total Score</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {salespersonRankings
+                      .sort((a, b) => a.rank - b.rank)
+                      .map((row, index) => (
+                        <tr 
+                          key={row.salesperson} 
+                          style={{ 
+                            borderBottom: "1px solid #334155",
+                            backgroundColor: index === 0 ? "rgba(234, 179, 8, 0.1)" : "transparent"
+                          }}
+                        >
+                          <td style={tdStyle}>
+                            <span style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              width: 32,
+                              height: 32,
+                              borderRadius: "50%",
+                              backgroundColor: index === 0 ? "#eab308" : index === 1 ? "#94a3b8" : index === 2 ? "#b45309" : "#334155",
+                              color: index < 3 ? "#000" : "#fff",
+                              fontWeight: 700,
+                              fontSize: 14
+                            }}>
+                              {row.rank}
+                            </span>
+                          </td>
+                          <td style={tdStyle}>
+                            <div style={{ fontWeight: 600, fontSize: 15 }}>
+                              {index === 0 && "👑 "}{row.salesperson}
+                            </div>
+                          </td>
+                          <td style={tdStyle}>
+                            <span style={{ 
+                              backgroundColor: "#3b82f620",
+                              color: "#60a5fa",
+                              padding: "4px 10px",
+                              borderRadius: 6,
+                              fontWeight: 600
+                            }}>
+                              {row.units_sold}
+                            </span>
+                          </td>
+                          <td style={tdStyle}>{row.total_activity.toLocaleString()}</td>
+                          <td style={tdStyle}>
+                            <span style={{
+                              color: row.closing_pct >= 0.2 ? "#22c55e" : row.closing_pct >= 0.1 ? "#eab308" : "#ef4444"
+                            }}>
+                              {(row.closing_pct * 100).toFixed(1)}%
+                            </span>
+                          </td>
+                          <td style={tdStyle}>
+                            <span style={{ 
+                              backgroundColor: row.google_reviews >= 5 ? "#22c55e20" : "transparent",
+                              color: row.google_reviews >= 5 ? "#22c55e" : "#fff",
+                              padding: "4px 10px",
+                              borderRadius: 6,
+                              fontWeight: 600
+                            }}>
+                              ⭐ {row.google_reviews}
+                            </span>
+                          </td>
+                          <td style={tdStyle}>
+                            <span style={{
+                              backgroundColor: index === 0 ? "#eab30830" : "#33415530",
+                              color: index === 0 ? "#eab308" : "#fff",
+                              padding: "6px 12px",
+                              borderRadius: 8,
+                              fontWeight: 700,
+                              fontSize: 15
+                            }}>
+                              {row.total_score}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            <div style={{ padding: 16, borderTop: "1px solid #334155", fontSize: 12, color: "#64748b" }}>
+              💡 Data syncs from Google Sheets every 5 minutes. <a href="https://docs.google.com/spreadsheets/d/1rqIYaIWK-rqxCwULE4IPibrLAcn8p9hRX_abJn8lR84/edit" target="_blank" style={{ color: "#3b82f6" }}>Edit Sheet →</a>
+            </div>
+          </div>
+        )}
+
+        {/* Review Scoreboard Tab */}
         {activeTab === "scoreboard" && (
           <div style={{ backgroundColor: "#1e293b", borderRadius: 12, overflow: "hidden" }}>
             <div style={{ overflowX: "auto" }}>
@@ -206,6 +399,7 @@ export default function AdminDashboardClient({
           </div>
         )}
 
+        {/* Referrals Tab */}
         {activeTab === "referrals" && (
           <div style={{ backgroundColor: "#1e293b", borderRadius: 12, overflow: "hidden" }}>
             {referrals.length === 0 ? (
@@ -253,6 +447,7 @@ export default function AdminDashboardClient({
           </div>
         )}
 
+        {/* Activity Tab */}
         {activeTab === "activity" && (
           <div style={{ backgroundColor: "#1e293b", borderRadius: 12, padding: 20 }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
