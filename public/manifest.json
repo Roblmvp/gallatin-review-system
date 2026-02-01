@@ -94,30 +94,5 @@
       "url": "/tv",
       "icons": [{ "src": "/icons/shortcut-tv.png", "sizes": "96x96" }]
     }
-  ],
-  "screenshots": [
-    {
-      "src": "/screenshots/sales-dashboard.png",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Sales Dashboard"
-    },
-    {
-      "src": "/screenshots/review-page.png",
-      "sizes": "1080x1920",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Customer Review Page"
-    },
-    {
-      "src": "/screenshots/admin-desktop.png",
-      "sizes": "1920x1080",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Admin Dashboard"
-    }
-  ],
-  "related_applications": [],
-  "prefer_related_applications": false
+  ]
 }
