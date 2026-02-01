@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabaseServer } from "@/lib/supabase";
 import { verifyPassword, isHashedPassword, hashPassword } from "@/lib/password";
+import { checkRateLimit } from "@/lib/ratelimit";
 
 const ADMIN_NOTIFICATION_EMAIL = "robertlisowski57@gmail.com";
 
@@ -51,6 +52,11 @@ export async function POST(request: NextRequest) {
     const normalizedEmail = email?.toLowerCase().trim();
 
     if (action === "forgot_password") {
+      const rateLimitResult = await checkRateLimit(request, "passwordReset");
+      if (!rateLimitResult.success) {
+        return rateLimitResult.response;
+      }
+
       const { data: user } = await supabaseServer
         .from("admin_users")
         .select("name, email, is_active")
@@ -65,6 +71,11 @@ export async function POST(request: NextRequest) {
         success: true,
         message: "If an account exists for " + email + ", a password reset request has been sent to the administrator.",
       });
+    }
+
+    const rateLimitResult = await checkRateLimit(request, "auth");
+    if (!rateLimitResult.success) {
+      return rateLimitResult.response;
     }
 
     const { data: user, error } = await supabaseServer
