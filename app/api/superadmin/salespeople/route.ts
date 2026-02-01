@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabaseServer } from "@/lib/supabase";
+import { hashPassword } from "@/lib/password";
 
 // Verify super admin session
 async function verifySuperAdmin(): Promise<boolean> {
@@ -53,19 +54,24 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { name, email, password, slug } = body;
+    const { name, email, password, slug, title, phone } = body;
 
     if (!email || !name || !password || !slug) {
       return NextResponse.json({ error: "Name, email, password, and slug are required" }, { status: 400 });
     }
+
+    // Hash the password before storing
+    const hashedPassword = await hashPassword(password);
 
     const { data, error } = await supabaseServer
       .from("salesperson_users")
       .insert({
         email: email.toLowerCase().trim(),
         name,
-        password,
+        password: hashedPassword,
         slug: slug.toLowerCase().trim(),
+        title: title || "Product Specialist",
+        phone: phone || null,
         is_active: true,
       })
       .select()
@@ -95,7 +101,7 @@ export async function PATCH(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { id, is_active, password, name, slug } = body;
+    const { id, is_active, password, name, slug, title, phone } = body;
 
     if (!id) {
       return NextResponse.json({ error: "User ID is required" }, { status: 400 });
@@ -103,9 +109,15 @@ export async function PATCH(request: NextRequest) {
 
     const updates: Record<string, any> = {};
     if (typeof is_active === "boolean") updates.is_active = is_active;
-    if (password) updates.password = password;
     if (name) updates.name = name;
     if (slug) updates.slug = slug.toLowerCase().trim();
+    if (title) updates.title = title;
+    if (typeof phone === "string") updates.phone = phone || null;
+    
+    // Hash password if provided
+    if (password) {
+      updates.password = await hashPassword(password);
+    }
 
     if (Object.keys(updates).length === 0) {
       return NextResponse.json({ error: "No updates provided" }, { status: 400 });
