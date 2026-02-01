@@ -1,14 +1,9 @@
-// lib/ratelimit.ts
-// Rate limiting utility using Upstash Redis
-
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { NextRequest, NextResponse } from "next/server";
 
-// Check if Upstash is configured
 const isConfigured = process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN;
 
-// Create Redis client only if configured
 const redis = isConfigured
   ? new Redis({
       url: process.env.UPSTASH_REDIS_REST_URL!,
@@ -16,9 +11,7 @@ const redis = isConfigured
     })
   : null;
 
-// Different rate limiters for different use cases
 export const rateLimiters = {
-  // Auth endpoints: 5 attempts per minute (prevent brute force)
   auth: redis
     ? new Ratelimit({
         redis,
@@ -26,8 +19,6 @@ export const rateLimiters = {
         prefix: "ratelimit:auth",
       })
     : null,
-
-  // API endpoints: 30 requests per minute
   api: redis
     ? new Ratelimit({
         redis,
@@ -35,8 +26,6 @@ export const rateLimiters = {
         prefix: "ratelimit:api",
       })
     : null,
-
-  // Tracking endpoints: 60 requests per minute (more lenient for page views)
   tracking: redis
     ? new Ratelimit({
         redis,
@@ -44,8 +33,6 @@ export const rateLimiters = {
         prefix: "ratelimit:tracking",
       })
     : null,
-
-  // Password reset: 3 attempts per hour
   passwordReset: redis
     ? new Ratelimit({
         redis,
@@ -55,21 +42,18 @@ export const rateLimiters = {
     : null,
 };
 
-// Get client IP from request
 export function getClientIP(request: NextRequest): string {
   const forwarded = request.headers.get("x-forwarded-for");
   const ip = forwarded ? forwarded.split(",")[0].trim() : "127.0.0.1";
   return ip;
 }
 
-// Rate limit check helper
 export async function checkRateLimit(
   request: NextRequest,
   limiterType: keyof typeof rateLimiters = "api"
 ): Promise<{ success: boolean; response?: NextResponse }> {
   const limiter = rateLimiters[limiterType];
 
-  // If rate limiting is not configured, allow the request
   if (!limiter) {
     return { success: true };
   }
