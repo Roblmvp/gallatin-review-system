@@ -4,6 +4,28 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
   title: "DrivePulse by Vyaxis | The Heartbeat of Your Dealership",
   description: "Track sales KPIs, engage customers after delivery, boost Google reviews, and turn every sale into a lasting relationship. The all-in-one dealership performance platform.",
+  openGraph: {
+    title: "DrivePulse by Vyaxis",
+    description: "Track. Engage. Retain. Grow. The complete dealership performance platform with AI-powered sales tools, KPI tracking, and customer retention.",
+    url: "https://gallatincdjr.reviews/demo",
+    siteName: "DrivePulse by Vyaxis",
+    images: [
+      {
+        url: "https://res.cloudinary.com/di5ujiwjp/image/upload/v1769920149/drivepulse-og_zfjnpm.png",
+        width: 1200,
+        height: 630,
+        alt: "DrivePulse - The Heartbeat of Your Dealership",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DrivePulse by Vyaxis",
+    description: "Track. Engage. Retain. Grow. The complete dealership performance platform.",
+    images: ["https://res.cloudinary.com/di5ujiwjp/image/upload/v1769920149/drivepulse-og_zfjnpm.png"],
+  },
 };
 
 export default function DemoPage() {
