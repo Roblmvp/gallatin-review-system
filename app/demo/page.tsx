@@ -26,8 +26,8 @@ export default function DemoPage() {
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
             <a href="#features" style={{ fontSize: 14, fontWeight: 500, color: "#475569", textDecoration: "none" }}>Features</a>
+            <a href="#salesperson-app" style={{ fontSize: 14, fontWeight: 500, color: "#475569", textDecoration: "none" }}>Sales App</a>
             <a href="#how-it-works" style={{ fontSize: 14, fontWeight: 500, color: "#475569", textDecoration: "none" }}>How It Works</a>
-            <a href="#testimonials" style={{ fontSize: 14, fontWeight: 500, color: "#475569", textDecoration: "none" }}>Testimonials</a>
             <a href="#contact" style={{ padding: "10px 20px", fontSize: 14, fontWeight: 600, background: "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)", color: "#fff", textDecoration: "none", borderRadius: 8 }}>Get Started →</a>
           </div>
         </div>
@@ -47,7 +47,7 @@ export default function DemoPage() {
               Track. Engage.<br />Retain. Grow.
             </h1>
             <p style={{ fontSize: 18, color: "#64748b", lineHeight: 1.7, margin: "0 0 32px 0" }}>
-              From sales KPIs to post-delivery engagement, DrivePulse gives your team the tools to close more deals and build lasting customer relationships.
+              From sales KPIs to AI-powered assistance, DrivePulse gives your team the tools to close more deals, retain more customers, and build lasting relationships.
             </p>
             <div style={{ display: "flex", gap: 16 }}>
               <a href="#contact" style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 28px", fontSize: 15, fontWeight: 600, background: "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)", color: "#fff", textDecoration: "none", borderRadius: 10, boxShadow: "0 4px 14px rgba(220, 38, 38, 0.3)" }}>
@@ -110,12 +110,12 @@ export default function DemoPage() {
             <div style={{ fontSize: 14, color: "#64748b", marginTop: 4 }}>More Google Reviews</div>
           </div>
           <div>
-            <div style={{ fontSize: 42, fontWeight: 800, color: "#2563eb" }}>+23%</div>
+            <div style={{ fontSize: 42, fontWeight: 800, color: "#2563eb" }}>+31%</div>
             <div style={{ fontSize: 14, color: "#64748b", marginTop: 4 }}>Service Retention</div>
           </div>
           <div>
-            <div style={{ fontSize: 42, fontWeight: 800, color: "#16a34a" }}>2 min</div>
-            <div style={{ fontSize: 14, color: "#64748b", marginTop: 4 }}>Setup Per Salesperson</div>
+            <div style={{ fontSize: 42, fontWeight: 800, color: "#16a34a" }}>+18%</div>
+            <div style={{ fontSize: 14, color: "#64748b", marginTop: 4 }}>Repeat Customers</div>
           </div>
           <div>
             <div style={{ fontSize: 42, fontWeight: 800, color: "#7c3aed" }}>$0</div>
@@ -169,6 +169,225 @@ export default function DemoPage() {
         </div>
       </div>
 
+      {/* Salesperson App Section - NEW */}
+      <div id="salesperson-app" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)", padding: "100px 24px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 64, alignItems: "center" }}>
+            <div>
+              <div style={{ display: "inline-block", padding: "6px 14px", backgroundColor: "rgba(59, 130, 246, 0.2)", border: "1px solid rgba(59, 130, 246, 0.3)", borderRadius: 100, fontSize: 13, fontWeight: 500, color: "#60a5fa", marginBottom: 24 }}>
+                📱 Salesperson Mobile App
+              </div>
+              <h2 style={{ fontSize: 40, fontWeight: 700, margin: "0 0 20px 0", letterSpacing: "-1px", color: "#fff" }}>
+                Your Team's Secret Weapon
+              </h2>
+              <p style={{ fontSize: 18, color: "#94a3b8", lineHeight: 1.7, margin: "0 0 32px 0" }}>
+                Every salesperson gets their own mobile app with real-time KPIs, AI-powered assistance, training modules, and customer engagement tools - all in their pocket.
+              </p>
+              
+              <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
+                  <div style={{ width: 48, height: 48, background: "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>📊</div>
+                  <div>
+                    <div style={{ fontSize: 16, fontWeight: 600, color: "#fff", marginBottom: 4 }}>Live KPI Dashboard</div>
+                    <div style={{ fontSize: 14, color: "#94a3b8", lineHeight: 1.5 }}>Real-time access to units sold, gross, closing rate, rankings, and dealership pacing vs. goals.</div>
+                  </div>
+                </div>
+                
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
+                  <div style={{ width: 48, height: 48, background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>🤖</div>
+                  <div>
+                    <div style={{ fontSize: 16, fontWeight: 600, color: "#fff", marginBottom: 4 }}>AI Sales Assistant</div>
+                    <div style={{ fontSize: 14, color: "#94a3b8", lineHeight: 1.5 }}>GPT-powered chat for instant product knowledge, objection handling, and competitive comparisons.</div>
+                  </div>
+                </div>
+                
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
+                  <div style={{ width: 48, height: 48, background: "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>🎓</div>
+                  <div>
+                    <div style={{ fontSize: 16, fontWeight: 600, color: "#fff", marginBottom: 4 }}>Training Modules</div>
+                    <div style={{ fontSize: 14, color: "#94a3b8", lineHeight: 1.5 }}>On-demand video training, quizzes, and certifications. Track completion and skill development.</div>
+                  </div>
+                </div>
+                
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 16 }}>
+                  <div style={{ width: 48, height: 48, background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, flexShrink: 0 }}>💬</div>
+                  <div>
+                    <div style={{ fontSize: 16, fontWeight: 600, color: "#fff", marginBottom: 4 }}>One-Tap Review Requests</div>
+                    <div style={{ fontSize: 14, color: "#94a3b8", lineHeight: 1.5 }}>Send personalized review links via text or email directly from the app after every delivery.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <div style={{ position: "relative" }}>
+                {/* Phone Frame */}
+                <div style={{ width: 280, height: 580, backgroundColor: "#000", borderRadius: 40, padding: 12, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.1)" }}>
+                  <div style={{ width: "100%", height: "100%", backgroundColor: "#0f172a", borderRadius: 32, overflow: "hidden" }}>
+                    {/* Phone Screen Content */}
+                    <div style={{ padding: 20 }}>
+                      {/* Status Bar */}
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+                        <div style={{ fontSize: 14, fontWeight: 600, color: "#fff" }}>9:41</div>
+                        <div style={{ display: "flex", gap: 4 }}>
+                          <div style={{ fontSize: 12, color: "#fff" }}>📶</div>
+                          <div style={{ fontSize: 12, color: "#fff" }}>🔋</div>
+                        </div>
+                      </div>
+                      
+                      {/* App Header */}
+                      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
+                        <div style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: "#dc2626", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                          </svg>
+                        </div>
+                        <div>
+                          <div style={{ fontSize: 16, fontWeight: 700, color: "#fff" }}>Good morning, Mike!</div>
+                          <div style={{ fontSize: 12, color: "#64748b" }}>You're #1 this month 🏆</div>
+                        </div>
+                      </div>
+                      
+                      {/* Quick Stats */}
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
+                        <div style={{ backgroundColor: "#1e293b", borderRadius: 12, padding: 14 }}>
+                          <div style={{ fontSize: 11, color: "#64748b", marginBottom: 4 }}>Units MTD</div>
+                          <div style={{ fontSize: 24, fontWeight: 700, color: "#22c55e" }}>18</div>
+                        </div>
+                        <div style={{ backgroundColor: "#1e293b", borderRadius: 12, padding: 14 }}>
+                          <div style={{ fontSize: 11, color: "#64748b", marginBottom: 4 }}>Gross MTD</div>
+                          <div style={{ fontSize: 24, fontWeight: 700, color: "#3b82f6" }}>$42k</div>
+                        </div>
+                      </div>
+                      
+                      {/* AI Assistant Preview */}
+                      <div style={{ backgroundColor: "#1e293b", borderRadius: 12, padding: 14, marginBottom: 20 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                          <div style={{ fontSize: 16 }}>🤖</div>
+                          <div style={{ fontSize: 12, fontWeight: 600, color: "#8b5cf6" }}>AI Assistant</div>
+                        </div>
+                        <div style={{ fontSize: 12, color: "#94a3b8", lineHeight: 1.5 }}>Ask me anything about inventory, pricing, or competitor comparisons...</div>
+                      </div>
+                      
+                      {/* Quick Actions */}
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+                        <div style={{ backgroundColor: "#dc2626", borderRadius: 10, padding: 12, textAlign: "center" }}>
+                          <div style={{ fontSize: 18, marginBottom: 4 }}>⭐</div>
+                          <div style={{ fontSize: 10, color: "#fff", fontWeight: 500 }}>Send Review</div>
+                        </div>
+                        <div style={{ backgroundColor: "#2563eb", borderRadius: 10, padding: 12, textAlign: "center" }}>
+                          <div style={{ fontSize: 18, marginBottom: 4 }}>📊</div>
+                          <div style={{ fontSize: 10, color: "#fff", fontWeight: 500 }}>My Stats</div>
+                        </div>
+                        <div style={{ backgroundColor: "#7c3aed", borderRadius: 10, padding: 12, textAlign: "center" }}>
+                          <div style={{ fontSize: 18, marginBottom: 4 }}>🎓</div>
+                          <div style={{ fontSize: 10, color: "#fff", fontWeight: 500 }}>Training</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Floating Badge */}
+                <div style={{ position: "absolute", top: -10, right: -10, backgroundColor: "#22c55e", color: "#fff", padding: "6px 12px", borderRadius: 100, fontSize: 12, fontWeight: 600, boxShadow: "0 4px 12px rgba(34, 197, 94, 0.4)" }}>
+                  iOS & Android
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Retention & Retargeting Section - NEW */}
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "100px 24px" }}>
+        <div style={{ textAlign: "center", marginBottom: 64 }}>
+          <div style={{ display: "inline-block", padding: "6px 14px", backgroundColor: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 100, fontSize: 13, fontWeight: 500, color: "#16a34a", marginBottom: 16 }}>
+            🎯 Customer Retention Engine
+          </div>
+          <h2 style={{ fontSize: 36, fontWeight: 700, margin: "0 0 16px 0", letterSpacing: "-1px", color: "#0f172a" }}>Turn One Sale Into a Lifetime Customer</h2>
+          <p style={{ fontSize: 18, color: "#64748b", maxWidth: 600, margin: "0 auto" }}>Automated retention tools and pixel retargeting keep your dealership top-of-mind for service and future sales.</p>
+        </div>
+        
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 32 }}>
+          <div style={{ backgroundColor: "#f8fafc", borderRadius: 20, padding: 40, border: "1px solid #e2e8f0" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24 }}>
+              <div style={{ width: 56, height: 56, background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>🎯</div>
+              <div>
+                <h3 style={{ fontSize: 20, fontWeight: 600, margin: 0, color: "#0f172a" }}>Pixel Retargeting</h3>
+                <p style={{ fontSize: 14, color: "#64748b", margin: 0 }}>Facebook, Instagram & Google</p>
+              </div>
+            </div>
+            <p style={{ fontSize: 15, color: "#64748b", lineHeight: 1.7, marginBottom: 20 }}>
+              Every customer who scans their review page is automatically added to your retargeting audiences. Show them service specials, trade-in offers, and new inventory.
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              <span style={{ padding: "6px 12px", backgroundColor: "#dbeafe", color: "#2563eb", borderRadius: 6, fontSize: 12, fontWeight: 500 }}>Meta Pixel</span>
+              <span style={{ padding: "6px 12px", backgroundColor: "#dcfce7", color: "#16a34a", borderRadius: 6, fontSize: 12, fontWeight: 500 }}>Google Ads</span>
+              <span style={{ padding: "6px 12px", backgroundColor: "#fef3c7", color: "#d97706", borderRadius: 6, fontSize: 12, fontWeight: 500 }}>Custom Audiences</span>
+            </div>
+          </div>
+          
+          <div style={{ backgroundColor: "#f8fafc", borderRadius: 20, padding: 40, border: "1px solid #e2e8f0" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 24 }}>
+              <div style={{ width: 56, height: 56, background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)", borderRadius: 14, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24 }}>🔄</div>
+              <div>
+                <h3 style={{ fontSize: 20, fontWeight: 600, margin: 0, color: "#0f172a" }}>Automated Retention</h3>
+                <p style={{ fontSize: 14, color: "#64748b", margin: 0 }}>Service & Sales Follow-up</p>
+              </div>
+            </div>
+            <p style={{ fontSize: 15, color: "#64748b", lineHeight: 1.7, marginBottom: 20 }}>
+              Trigger automated campaigns based on purchase date, service intervals, and lease maturity. Keep customers engaged without lifting a finger.
+            </p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              <span style={{ padding: "6px 12px", backgroundColor: "#f3e8ff", color: "#7c3aed", borderRadius: 6, fontSize: 12, fontWeight: 500 }}>Service Reminders</span>
+              <span style={{ padding: "6px 12px", backgroundColor: "#fce7f3", color: "#db2777", borderRadius: 6, fontSize: 12, fontWeight: 500 }}>Lease Maturity</span>
+              <span style={{ padding: "6px 12px", backgroundColor: "#e0e7ff", color: "#4f46e5", borderRadius: 6, fontSize: 12, fontWeight: 500 }}>Trade-In Offers</span>
+            </div>
+          </div>
+        </div>
+        
+        {/* Retention Flow Visual */}
+        <div style={{ marginTop: 48, backgroundColor: "#0f172a", borderRadius: 20, padding: 40 }}>
+          <div style={{ textAlign: "center", marginBottom: 32 }}>
+            <h3 style={{ fontSize: 20, fontWeight: 600, color: "#fff", margin: 0 }}>The Customer Journey Never Ends</h3>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", position: "relative" }}>
+            {/* Connection Line */}
+            <div style={{ position: "absolute", top: "50%", left: "10%", right: "10%", height: 2, background: "linear-gradient(90deg, #dc2626, #f59e0b, #22c55e, #3b82f6, #8b5cf6)", opacity: 0.5 }} />
+            
+            <div style={{ textAlign: "center", position: "relative", zIndex: 1 }}>
+              <div style={{ width: 64, height: 64, backgroundColor: "#dc2626", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, margin: "0 auto 12px" }}>🚗</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>Sale</div>
+              <div style={{ fontSize: 11, color: "#64748b" }}>Day 0</div>
+            </div>
+            
+            <div style={{ textAlign: "center", position: "relative", zIndex: 1 }}>
+              <div style={{ width: 64, height: 64, backgroundColor: "#f59e0b", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, margin: "0 auto 12px" }}>⭐</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>Review</div>
+              <div style={{ fontSize: 11, color: "#64748b" }}>Day 1-3</div>
+            </div>
+            
+            <div style={{ textAlign: "center", position: "relative", zIndex: 1 }}>
+              <div style={{ width: 64, height: 64, backgroundColor: "#22c55e", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, margin: "0 auto 12px" }}>🔧</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>First Service</div>
+              <div style={{ fontSize: 11, color: "#64748b" }}>90 Days</div>
+            </div>
+            
+            <div style={{ textAlign: "center", position: "relative", zIndex: 1 }}>
+              <div style={{ width: 64, height: 64, backgroundColor: "#3b82f6", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, margin: "0 auto 12px" }}>🎯</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>Retargeting</div>
+              <div style={{ fontSize: 11, color: "#64748b" }}>Ongoing</div>
+            </div>
+            
+            <div style={{ textAlign: "center", position: "relative", zIndex: 1 }}>
+              <div style={{ width: 64, height: 64, backgroundColor: "#8b5cf6", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, margin: "0 auto 12px" }}>🔄</div>
+              <div style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>Next Sale</div>
+              <div style={{ fontSize: 11, color: "#64748b" }}>2-4 Years</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Features Section */}
       <div id="features" style={{ backgroundColor: "#0f172a", padding: "100px 24px" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
@@ -177,59 +396,77 @@ export default function DemoPage() {
             <p style={{ fontSize: 18, color: "#94a3b8", maxWidth: 600, margin: "0 auto" }}>Access a collection of tools designed to streamline operations and boost performance.</p>
           </div>
           
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
-            <div style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28 }}>
-              <div style={{ fontSize: 32, marginBottom: 16 }}>📊</div>
-              <h3 style={{ fontSize: 17, fontWeight: 600, margin: "0 0 10px 0", color: "#fff" }}>Sales Leaderboard</h3>
-              <p style={{ fontSize: 14, color: "#94a3b8", lineHeight: 1.6, margin: 0 }}>Real-time rankings by units, gross, activity, and reviews. Gamify your showroom.</p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20 }}>
+            <div style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
+              <div style={{ fontSize: 28, marginBottom: 12 }}>📊</div>
+              <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 8px 0", color: "#fff" }}>Sales Leaderboard</h3>
+              <p style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.5, margin: 0 }}>Real-time rankings by units, gross, and activity.</p>
             </div>
             
-            <div style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28 }}>
-              <div style={{ fontSize: 32, marginBottom: 16 }}>🏆</div>
-              <h3 style={{ fontSize: 17, fontWeight: 600, margin: "0 0 10px 0", color: "#fff" }}>Salesperson of the Month</h3>
-              <p style={{ fontSize: 14, color: "#94a3b8", lineHeight: 1.6, margin: 0 }}>Automated recognition based on customizable scoring metrics.</p>
+            <div style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
+              <div style={{ fontSize: 28, marginBottom: 12 }}>🏆</div>
+              <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 8px 0", color: "#fff" }}>Salesperson of Month</h3>
+              <p style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.5, margin: 0 }}>Automated recognition and awards.</p>
             </div>
             
-            <div style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28 }}>
-              <div style={{ fontSize: 32, marginBottom: 16 }}>🎯</div>
-              <h3 style={{ fontSize: 17, fontWeight: 600, margin: "0 0 10px 0", color: "#fff" }}>Dealership Pacing</h3>
-              <p style={{ fontSize: 14, color: "#94a3b8", lineHeight: 1.6, margin: 0 }}>Track progress vs. monthly goals with visual dashboards and alerts.</p>
+            <div style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
+              <div style={{ fontSize: 28, marginBottom: 12 }}>🎯</div>
+              <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 8px 0", color: "#fff" }}>Dealership Pacing</h3>
+              <p style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.5, margin: 0 }}>Track progress vs. monthly goals.</p>
             </div>
             
-            <div style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28 }}>
-              <div style={{ fontSize: 32, marginBottom: 16 }}>📱</div>
-              <h3 style={{ fontSize: 17, fontWeight: 600, margin: "0 0 10px 0", color: "#fff" }}>Digital Business Cards</h3>
-              <p style={{ fontSize: 14, color: "#94a3b8", lineHeight: 1.6, margin: 0 }}>One-tap contact save with photo, phone, and service scheduling built in.</p>
+            <div style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
+              <div style={{ fontSize: 28, marginBottom: 12 }}>🤖</div>
+              <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 8px 0", color: "#fff" }}>AI Sales Assistant</h3>
+              <p style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.5, margin: 0 }}>GPT-powered product knowledge.</p>
             </div>
             
-            <div style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28 }}>
-              <div style={{ fontSize: 32, marginBottom: 16 }}>📅</div>
-              <h3 style={{ fontSize: 17, fontWeight: 600, margin: "0 0 10px 0", color: "#fff" }}>Service Reminders</h3>
-              <p style={{ fontSize: 14, color: "#94a3b8", lineHeight: 1.6, margin: 0 }}>Customers save first service to calendar automatically. Never lose a service visit.</p>
+            <div style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
+              <div style={{ fontSize: 28, marginBottom: 12 }}>📱</div>
+              <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 8px 0", color: "#fff" }}>Digital Business Cards</h3>
+              <p style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.5, margin: 0 }}>One-tap contact save for customers.</p>
             </div>
             
-            <div style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28 }}>
-              <div style={{ fontSize: 32, marginBottom: 16 }}>🔗</div>
-              <h3 style={{ fontSize: 17, fontWeight: 600, margin: "0 0 10px 0", color: "#fff" }}>Social Engagement</h3>
-              <p style={{ fontSize: 14, color: "#94a3b8", lineHeight: 1.6, margin: 0 }}>Connect customers to your Facebook, Instagram, YouTube, and more.</p>
+            <div style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
+              <div style={{ fontSize: 28, marginBottom: 12 }}>📅</div>
+              <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 8px 0", color: "#fff" }}>Service Reminders</h3>
+              <p style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.5, margin: 0 }}>Auto calendar saves for first service.</p>
             </div>
             
-            <div style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28 }}>
-              <div style={{ fontSize: 32, marginBottom: 16 }}>⭐</div>
-              <h3 style={{ fontSize: 17, fontWeight: 600, margin: "0 0 10px 0", color: "#fff" }}>Review Pages</h3>
-              <p style={{ fontSize: 14, color: "#94a3b8", lineHeight: 1.6, margin: 0 }}>Personal branded pages for each salesperson with direct Google review links.</p>
+            <div style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
+              <div style={{ fontSize: 28, marginBottom: 12 }}>🎓</div>
+              <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 8px 0", color: "#fff" }}>Training Modules</h3>
+              <p style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.5, margin: 0 }}>On-demand video training & quizzes.</p>
             </div>
             
-            <div style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28 }}>
-              <div style={{ fontSize: 32, marginBottom: 16 }}>📺</div>
-              <h3 style={{ fontSize: 17, fontWeight: 600, margin: "0 0 10px 0", color: "#fff" }}>Showroom TV Display</h3>
-              <p style={{ fontSize: 14, color: "#94a3b8", lineHeight: 1.6, margin: 0 }}>Live leaderboard for your showroom. Motivate your team and impress customers.</p>
+            <div style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
+              <div style={{ fontSize: 28, marginBottom: 12 }}>🎯</div>
+              <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 8px 0", color: "#fff" }}>Pixel Retargeting</h3>
+              <p style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.5, margin: 0 }}>Auto-build retargeting audiences.</p>
             </div>
             
-            <div style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28 }}>
-              <div style={{ fontSize: 32, marginBottom: 16 }}>🎁</div>
-              <h3 style={{ fontSize: 17, fontWeight: 600, margin: "0 0 10px 0", color: "#fff" }}>Referral Tracking</h3>
-              <p style={{ fontSize: 14, color: "#94a3b8", lineHeight: 1.6, margin: 0 }}>Built-in referral program with unique links. Know who brings in new business.</p>
+            <div style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
+              <div style={{ fontSize: 28, marginBottom: 12 }}>⭐</div>
+              <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 8px 0", color: "#fff" }}>Review Pages</h3>
+              <p style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.5, margin: 0 }}>Personal branded review links.</p>
+            </div>
+            
+            <div style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
+              <div style={{ fontSize: 28, marginBottom: 12 }}>📺</div>
+              <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 8px 0", color: "#fff" }}>Showroom TV</h3>
+              <p style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.5, margin: 0 }}>Live leaderboard for your showroom.</p>
+            </div>
+            
+            <div style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
+              <div style={{ fontSize: 28, marginBottom: 12 }}>🔗</div>
+              <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 8px 0", color: "#fff" }}>Social Engagement</h3>
+              <p style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.5, margin: 0 }}>Connect all your social channels.</p>
+            </div>
+            
+            <div style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
+              <div style={{ fontSize: 28, marginBottom: 12 }}>🎁</div>
+              <h3 style={{ fontSize: 15, fontWeight: 600, margin: "0 0 8px 0", color: "#fff" }}>Referral Tracking</h3>
+              <p style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.5, margin: 0 }}>Track who brings in new business.</p>
             </div>
           </div>
         </div>
@@ -250,18 +487,18 @@ export default function DemoPage() {
           </div>
           <div style={{ textAlign: "center" }}>
             <div style={{ width: 56, height: 56, background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, fontWeight: 700, color: "#fff", margin: "0 auto 20px", boxShadow: "0 4px 14px rgba(37, 99, 235, 0.3)" }}>2</div>
-            <h3 style={{ fontSize: 17, fontWeight: 600, margin: "0 0 8px 0", color: "#0f172a" }}>Print QR Codes</h3>
-            <p style={{ fontSize: 14, color: "#64748b", lineHeight: 1.6, margin: 0 }}>Each salesperson gets a unique QR code to share at delivery.</p>
+            <h3 style={{ fontSize: 17, fontWeight: 600, margin: "0 0 8px 0", color: "#0f172a" }}>Install App</h3>
+            <p style={{ fontSize: 14, color: "#64748b", lineHeight: 1.6, margin: 0 }}>Salespeople download the app and access their personalized dashboard.</p>
           </div>
           <div style={{ textAlign: "center" }}>
             <div style={{ width: 56, height: 56, background: "linear-gradient(135deg, #16a34a 0%, #15803d 100%)", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, fontWeight: 700, color: "#fff", margin: "0 auto 20px", boxShadow: "0 4px 14px rgba(22, 163, 74, 0.3)" }}>3</div>
-            <h3 style={{ fontSize: 17, fontWeight: 600, margin: "0 0 8px 0", color: "#0f172a" }}>Customers Engage</h3>
-            <p style={{ fontSize: 14, color: "#64748b", lineHeight: 1.6, margin: 0 }}>Customers scan, save contacts, schedule service, and leave reviews.</p>
+            <h3 style={{ fontSize: 17, fontWeight: 600, margin: "0 0 8px 0", color: "#0f172a" }}>Engage Customers</h3>
+            <p style={{ fontSize: 14, color: "#64748b", lineHeight: 1.6, margin: 0 }}>Send review requests and let retention automation do the rest.</p>
           </div>
           <div style={{ textAlign: "center" }}>
             <div style={{ width: 56, height: 56, background: "linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%)", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, fontWeight: 700, color: "#fff", margin: "0 auto 20px", boxShadow: "0 4px 14px rgba(124, 58, 237, 0.3)" }}>4</div>
-            <h3 style={{ fontSize: 17, fontWeight: 600, margin: "0 0 8px 0", color: "#0f172a" }}>Track Everything</h3>
-            <p style={{ fontSize: 14, color: "#64748b", lineHeight: 1.6, margin: 0 }}>Monitor KPIs, reviews, and engagement in your admin dashboard.</p>
+            <h3 style={{ fontSize: 17, fontWeight: 600, margin: "0 0 8px 0", color: "#0f172a" }}>Track & Grow</h3>
+            <p style={{ fontSize: 14, color: "#64748b", lineHeight: 1.6, margin: 0 }}>Monitor KPIs, retarget customers, and watch your business grow.</p>
           </div>
         </div>
       </div>
@@ -277,7 +514,7 @@ export default function DemoPage() {
             <div style={{ backgroundColor: "#fff", borderRadius: 16, padding: 32, border: "1px solid #e2e8f0", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)" }}>
               <div style={{ fontSize: 24, color: "#dc2626", marginBottom: 16 }}>"</div>
               <p style={{ fontSize: 16, color: "#475569", lineHeight: 1.7, margin: "0 0 24px 0" }}>
-                DrivePulse transformed how we track performance. Our team is more competitive than ever, and we've seen a 40% increase in Google reviews since implementing it. The service retention tools alone have paid for the platform ten times over.
+                The AI assistant has been incredible for our newer salespeople. They can get instant answers about features, pricing, and how we stack up against competitors. It's like having a sales trainer available 24/7.
               </p>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <div style={{ width: 48, height: 48, borderRadius: 12, backgroundColor: "#dc2626", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 600, fontSize: 18 }}>JM</div>
@@ -291,7 +528,7 @@ export default function DemoPage() {
             <div style={{ backgroundColor: "#fff", borderRadius: 16, padding: 32, border: "1px solid #e2e8f0", boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.05)" }}>
               <div style={{ fontSize: 24, color: "#dc2626", marginBottom: 16 }}>"</div>
               <p style={{ fontSize: 16, color: "#475569", lineHeight: 1.7, margin: "0 0 24px 0" }}>
-                The showroom TV leaderboard has been a game-changer for team morale. Salespeople actually ask to see their stats now. Setup was painless and the Vyaxis team has been incredibly responsive to our needs.
+                The pixel retargeting changed everything. We're now showing service specials to customers who bought from us years ago. Our service retention is up 31% and we've seen a huge bump in repeat buyers.
               </p>
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <div style={{ width: 48, height: 48, borderRadius: 12, backgroundColor: "#2563eb", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 600, fontSize: 18 }}>SR</div>
@@ -313,23 +550,28 @@ export default function DemoPage() {
         
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div style={{ backgroundColor: "#f8fafc", borderRadius: 12, padding: 24, border: "1px solid #e2e8f0" }}>
-            <h3 style={{ fontSize: 16, fontWeight: 600, margin: "0 0 8px 0", color: "#0f172a" }}>How long does setup take?</h3>
-            <p style={{ fontSize: 15, color: "#64748b", lineHeight: 1.6, margin: 0 }}>Most dealerships are fully operational within 1-2 hours. We handle all the setup for you including adding your salespeople and customizing your branding.</p>
+            <h3 style={{ fontSize: 16, fontWeight: 600, margin: "0 0 8px 0", color: "#0f172a" }}>How does the AI Sales Assistant work?</h3>
+            <p style={{ fontSize: 15, color: "#64748b", lineHeight: 1.6, margin: 0 }}>Our AI is trained on your inventory, pricing, manufacturer specs, and competitive data. Salespeople can ask natural questions and get instant, accurate answers right on the lot.</p>
+          </div>
+          
+          <div style={{ backgroundColor: "#f8fafc", borderRadius: 12, padding: 24, border: "1px solid #e2e8f0" }}>
+            <h3 style={{ fontSize: 16, fontWeight: 600, margin: "0 0 8px 0", color: "#0f172a" }}>How does pixel retargeting work?</h3>
+            <p style={{ fontSize: 15, color: "#64748b", lineHeight: 1.6, margin: 0 }}>When customers visit their review page, we automatically add them to your Meta and Google retargeting audiences. You can then show them service specials, trade-in offers, and new inventory ads.</p>
           </div>
           
           <div style={{ backgroundColor: "#f8fafc", borderRadius: 12, padding: 24, border: "1px solid #e2e8f0" }}>
             <h3 style={{ fontSize: 16, fontWeight: 600, margin: "0 0 8px 0", color: "#0f172a" }}>Can I integrate with my existing DMS?</h3>
-            <p style={{ fontSize: 15, color: "#64748b", lineHeight: 1.6, margin: 0 }}>Yes! We can integrate with most major DMS platforms to automatically pull sales data. Contact us for specific integrations.</p>
+            <p style={{ fontSize: 15, color: "#64748b", lineHeight: 1.6, margin: 0 }}>Yes! We integrate with most major DMS platforms including CDK, Reynolds, Dealertrack, and more to automatically pull sales data and customer information.</p>
+          </div>
+          
+          <div style={{ backgroundColor: "#f8fafc", borderRadius: 12, padding: 24, border: "1px solid #e2e8f0" }}>
+            <h3 style={{ fontSize: 16, fontWeight: 600, margin: "0 0 8px 0", color: "#0f172a" }}>Is the salesperson app available on both iOS and Android?</h3>
+            <p style={{ fontSize: 15, color: "#64748b", lineHeight: 1.6, margin: 0 }}>Yes, the DrivePulse app is available on both the Apple App Store and Google Play Store. It's also available as a progressive web app that works on any device.</p>
           </div>
           
           <div style={{ backgroundColor: "#f8fafc", borderRadius: 12, padding: 24, border: "1px solid #e2e8f0" }}>
             <h3 style={{ fontSize: 16, fontWeight: 600, margin: "0 0 8px 0", color: "#0f172a" }}>Is there a long-term contract?</h3>
             <p style={{ fontSize: 15, color: "#64748b", lineHeight: 1.6, margin: 0 }}>No long-term contracts required. We offer flexible month-to-month plans because we're confident you'll love the results.</p>
-          </div>
-          
-          <div style={{ backgroundColor: "#f8fafc", borderRadius: 12, padding: 24, border: "1px solid #e2e8f0" }}>
-            <h3 style={{ fontSize: 16, fontWeight: 600, margin: "0 0 8px 0", color: "#0f172a" }}>What kind of support do you offer?</h3>
-            <p style={{ fontSize: 15, color: "#64748b", lineHeight: 1.6, margin: 0 }}>We provide dedicated support via phone, email, and chat. Our team is made up of automotive industry veterans who understand dealership operations.</p>
           </div>
         </div>
       </div>
@@ -364,7 +606,7 @@ export default function DemoPage() {
           </div>
           <div style={{ display: "flex", gap: 24 }}>
             <a href="#features" style={{ fontSize: 14, color: "#64748b", textDecoration: "none" }}>Features</a>
-            <a href="#how-it-works" style={{ fontSize: 14, color: "#64748b", textDecoration: "none" }}>How It Works</a>
+            <a href="#salesperson-app" style={{ fontSize: 14, color: "#64748b", textDecoration: "none" }}>Sales App</a>
             <a href="#contact" style={{ fontSize: 14, color: "#64748b", textDecoration: "none" }}>Contact</a>
             <Link href="/review/robert" style={{ fontSize: 14, color: "#64748b", textDecoration: "none" }}>Live Demo</Link>
           </div>
