@@ -28,23 +28,255 @@ export default function SuperAdminPage() {
 
   useEffect(() => { checkAuth(); }, []);
 
-  const checkAuth = async () => { try { const res = await fetch("/api/superadmin/users"); if (res.ok) { setIsAuthenticated(true); fetchAllData(); } } catch { setIsAuthenticated(false); } };
-  const fetchAllData = async () => { await Promise.all([fetchAdminUsers(), fetchSalespersonUsers(), fetchActivityLogs()]); };
-  const handleLogin = async (e: React.FormEvent) => { e.preventDefault(); setIsLoading(true); setError(""); try { const res = await fetch("/api/superadmin/users", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "login", password }) }); const data = await res.json(); if (data.success) { setIsAuthenticated(true); fetchAllData(); } else { setError(data.error || "Invalid password"); } } catch { setError("Failed to connect"); } setIsLoading(false); };
-  const handleLogout = async () => { await fetch("/api/superadmin/users", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "logout" }) }); setIsAuthenticated(false); setPassword(""); };
-  const fetchAdminUsers = async () => { try { const res = await fetch("/api/superadmin/users"); const data = await res.json(); setAdminUsers(data.users || []); } catch (err) { console.error("Failed to fetch admin users:", err); } };
-  const toggleAdminStatus = async (user: AdminUser) => { try { await fetch("/api/superadmin/users", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: user.id, is_active: !user.is_active }) }); fetchAdminUsers(); logActivity("admin", user.email, user.name, user.is_active ? "Deactivated" : "Activated", `Admin account ${user.is_active ? "deactivated" : "activated"}`); } catch (err) { console.error("Failed to update user:", err); } };
-  const createAdmin = async (e: React.FormEvent) => { e.preventDefault(); setIsLoading(true); setError(""); try { const res = await fetch("/api/superadmin/users", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "create", ...newAdmin }) }); const data = await res.json(); if (data.success) { setShowAdminModal(false); setNewAdmin({ name: "", email: "", password: "" }); fetchAdminUsers(); logActivity("admin", newAdmin.email, newAdmin.name, "Created", "New admin account created"); } else { setError(data.error || "Failed to create user"); } } catch { setError("Failed to create user"); } setIsLoading(false); };
-  const updateAdmin = async (e: React.FormEvent) => { e.preventDefault(); if (!editingAdmin) return; setIsLoading(true); try { await fetch("/api/superadmin/users", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: editingAdmin.id, name: editingAdmin.name, password: editingAdmin.newPassword || undefined }) }); setShowEditAdminModal(false); setEditingAdmin(null); fetchAdminUsers(); logActivity("admin", editingAdmin.email, editingAdmin.name, "Updated", editingAdmin.newPassword ? "Password changed" : "Profile updated"); } catch { setError("Failed to update user"); } setIsLoading(false); };
-  const deleteAdmin = async (user: AdminUser) => { if (!confirm(`Are you sure you want to delete ${user.name}?`)) return; try { await fetch(`/api/superadmin/users?id=${user.id}`, { method: "DELETE" }); fetchAdminUsers(); logActivity("admin", user.email, user.name, "Deleted", "Admin account deleted"); } catch (err) { console.error("Failed to delete user:", err); } };
-  const fetchSalespersonUsers = async () => { try { const res = await fetch("/api/superadmin/salespeople"); const data = await res.json(); setSalespersonUsers(data.users || []); } catch (err) { console.error("Failed to fetch salesperson users:", err); } };
-  const toggleSalespersonStatus = async (user: SalespersonUser) => { try { await fetch("/api/superadmin/salespeople", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: user.id, is_active: !user.is_active }) }); fetchSalespersonUsers(); logActivity("sales", user.email, user.name, user.is_active ? "Deactivated" : "Activated", `Salesperson account ${user.is_active ? "deactivated" : "activated"}`); } catch (err) { console.error("Failed to update user:", err); } };
-  const createSalesperson = async (e: React.FormEvent) => { e.preventDefault(); setIsLoading(true); setError(""); try { const res = await fetch("/api/superadmin/salespeople", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(newSalesperson) }); const data = await res.json(); if (data.success) { setShowSalespersonModal(false); setNewSalesperson({ name: "", email: "", password: "", title: "Product Specialist", phone: "", slug: "" }); fetchSalespersonUsers(); logActivity("sales", newSalesperson.email, newSalesperson.name, "Created", "New salesperson account created"); } else { setError(data.error || "Failed to create user"); } } catch { setError("Failed to create user"); } setIsLoading(false); };
-  const updateSalesperson = async (e: React.FormEvent) => { e.preventDefault(); if (!editingSalesperson) return; setIsLoading(true); try { await fetch("/api/superadmin/salespeople", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: editingSalesperson.id, name: editingSalesperson.name, title: editingSalesperson.title, phone: editingSalesperson.phone, slug: editingSalesperson.slug, password: editingSalesperson.newPassword || undefined }) }); setShowEditSalespersonModal(false); setEditingSalesperson(null); fetchSalespersonUsers(); logActivity("sales", editingSalesperson.email, editingSalesperson.name, "Updated", editingSalesperson.newPassword ? "Password changed" : "Profile updated"); } catch { setError("Failed to update user"); } setIsLoading(false); };
-  const deleteSalesperson = async (user: SalespersonUser) => { if (!confirm(`Are you sure you want to delete ${user.name}?`)) return; try { await fetch(`/api/superadmin/salespeople?id=${user.id}`, { method: "DELETE" }); fetchSalespersonUsers(); logActivity("sales", user.email, user.name, "Deleted", "Salesperson account deleted"); } catch (err) { console.error("Failed to delete user:", err); } };
-  const fetchActivityLogs = async () => { try { const res = await fetch("/api/superadmin/activity"); const data = await res.json(); setActivityLogs(data.logs || []); } catch (err) { console.error("Failed to fetch activity logs:", err); } };
-  const logActivity = async (userType: string, userEmail: string, userName: string, action: string, details: string) => { try { await fetch("/api/superadmin/activity", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ user_type: userType, user_email: userEmail, user_name: userName, action, details }) }); fetchActivityLogs(); } catch (err) { console.error("Failed to log activity:", err); } };
-  const formatDate = (dateStr: string | null) => { if (!dateStr) return "Never"; return new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }); };
+  const checkAuth = async () => { 
+    try { 
+      const res = await fetch("/api/superadmin/users"); 
+      if (res.ok) { 
+        setIsAuthenticated(true); 
+        fetchAllData(); 
+      } 
+    } catch { 
+      setIsAuthenticated(false); 
+    } 
+  };
+  
+  const fetchAllData = async () => { 
+    await Promise.all([fetchAdminUsers(), fetchSalespersonUsers(), fetchActivityLogs()]); 
+  };
+  
+  const handleLogin = async (e: React.FormEvent) => { 
+    e.preventDefault(); 
+    setIsLoading(true); 
+    setError(""); 
+    try { 
+      const res = await fetch("/api/superadmin/users", { 
+        method: "POST", 
+        headers: { "Content-Type": "application/json" }, 
+        body: JSON.stringify({ action: "login", password }) 
+      }); 
+      const data = await res.json(); 
+      if (data.success) { 
+        setIsAuthenticated(true); 
+        fetchAllData(); 
+      } else { 
+        setError(data.error || "Invalid password"); 
+      } 
+    } catch { 
+      setError("Failed to connect"); 
+    } 
+    setIsLoading(false); 
+  };
+  
+  const handleLogout = async () => { 
+    await fetch("/api/superadmin/users", { 
+      method: "POST", 
+      headers: { "Content-Type": "application/json" }, 
+      body: JSON.stringify({ action: "logout" }) 
+    }); 
+    setIsAuthenticated(false); 
+    setPassword(""); 
+  };
+  
+  const fetchAdminUsers = async () => { 
+    try { 
+      const res = await fetch("/api/superadmin/users"); 
+      const data = await res.json(); 
+      setAdminUsers(data.users || []); 
+    } catch (err) { 
+      console.error("Failed to fetch admin users:", err); 
+    } 
+  };
+  
+  const toggleAdminStatus = async (user: AdminUser) => { 
+    try { 
+      await fetch("/api/superadmin/users", { 
+        method: "PATCH", 
+        headers: { "Content-Type": "application/json" }, 
+        body: JSON.stringify({ id: user.id, is_active: !user.is_active }) 
+      }); 
+      fetchAdminUsers(); 
+      const action = user.is_active ? "Deactivated" : "Activated";
+      const details = "Admin account " + (user.is_active ? "deactivated" : "activated");
+      logActivity("admin", user.email, user.name, action, details); 
+    } catch (err) { 
+      console.error("Failed to update user:", err); 
+    } 
+  };
+  
+  const createAdmin = async (e: React.FormEvent) => { 
+    e.preventDefault(); 
+    setIsLoading(true); 
+    setError(""); 
+    try { 
+      const res = await fetch("/api/superadmin/users", { 
+        method: "POST", 
+        headers: { "Content-Type": "application/json" }, 
+        body: JSON.stringify({ action: "create", ...newAdmin }) 
+      }); 
+      const data = await res.json(); 
+      if (data.success) { 
+        setShowAdminModal(false); 
+        setNewAdmin({ name: "", email: "", password: "" }); 
+        fetchAdminUsers(); 
+        logActivity("admin", newAdmin.email, newAdmin.name, "Created", "New admin account created"); 
+      } else { 
+        setError(data.error || "Failed to create user"); 
+      } 
+    } catch { 
+      setError("Failed to create user"); 
+    } 
+    setIsLoading(false); 
+  };
+  
+  const updateAdmin = async (e: React.FormEvent) => { 
+    e.preventDefault(); 
+    if (!editingAdmin) return; 
+    setIsLoading(true); 
+    try { 
+      await fetch("/api/superadmin/users", { 
+        method: "PATCH", 
+        headers: { "Content-Type": "application/json" }, 
+        body: JSON.stringify({ id: editingAdmin.id, name: editingAdmin.name, password: editingAdmin.newPassword || undefined }) 
+      }); 
+      setShowEditAdminModal(false); 
+      setEditingAdmin(null); 
+      fetchAdminUsers(); 
+      const details = editingAdmin.newPassword ? "Password changed" : "Profile updated";
+      logActivity("admin", editingAdmin.email, editingAdmin.name, "Updated", details); 
+    } catch { 
+      setError("Failed to update user"); 
+    } 
+    setIsLoading(false); 
+  };
+  
+  const deleteAdmin = async (user: AdminUser) => { 
+    if (!confirm("Are you sure you want to delete " + user.name + "?")) return; 
+    try { 
+      await fetch("/api/superadmin/users?id=" + user.id, { method: "DELETE" }); 
+      fetchAdminUsers(); 
+      logActivity("admin", user.email, user.name, "Deleted", "Admin account deleted"); 
+    } catch (err) { 
+      console.error("Failed to delete user:", err); 
+    } 
+  };
+  
+  const fetchSalespersonUsers = async () => { 
+    try { 
+      const res = await fetch("/api/superadmin/salespeople"); 
+      const data = await res.json(); 
+      setSalespersonUsers(data.users || []); 
+    } catch (err) { 
+      console.error("Failed to fetch salesperson users:", err); 
+    } 
+  };
+  
+  const toggleSalespersonStatus = async (user: SalespersonUser) => { 
+    try { 
+      await fetch("/api/superadmin/salespeople", { 
+        method: "PATCH", 
+        headers: { "Content-Type": "application/json" }, 
+        body: JSON.stringify({ id: user.id, is_active: !user.is_active }) 
+      }); 
+      fetchSalespersonUsers(); 
+      const action = user.is_active ? "Deactivated" : "Activated";
+      const details = "Salesperson account " + (user.is_active ? "deactivated" : "activated");
+      logActivity("sales", user.email, user.name, action, details); 
+    } catch (err) { 
+      console.error("Failed to update user:", err); 
+    } 
+  };
+  
+  const createSalesperson = async (e: React.FormEvent) => { 
+    e.preventDefault(); 
+    setIsLoading(true); 
+    setError(""); 
+    try { 
+      const res = await fetch("/api/superadmin/salespeople", { 
+        method: "POST", 
+        headers: { "Content-Type": "application/json" }, 
+        body: JSON.stringify(newSalesperson) 
+      }); 
+      const data = await res.json(); 
+      if (data.success) { 
+        setShowSalespersonModal(false); 
+        setNewSalesperson({ name: "", email: "", password: "", title: "Product Specialist", phone: "", slug: "" }); 
+        fetchSalespersonUsers(); 
+        logActivity("sales", newSalesperson.email, newSalesperson.name, "Created", "New salesperson account created"); 
+      } else { 
+        setError(data.error || "Failed to create user"); 
+      } 
+    } catch { 
+      setError("Failed to create user"); 
+    } 
+    setIsLoading(false); 
+  };
+  
+  const updateSalesperson = async (e: React.FormEvent) => { 
+    e.preventDefault(); 
+    if (!editingSalesperson) return; 
+    setIsLoading(true); 
+    try { 
+      await fetch("/api/superadmin/salespeople", { 
+        method: "PATCH", 
+        headers: { "Content-Type": "application/json" }, 
+        body: JSON.stringify({ 
+          id: editingSalesperson.id, 
+          name: editingSalesperson.name, 
+          title: editingSalesperson.title, 
+          phone: editingSalesperson.phone, 
+          slug: editingSalesperson.slug, 
+          password: editingSalesperson.newPassword || undefined 
+        }) 
+      }); 
+      setShowEditSalespersonModal(false); 
+      setEditingSalesperson(null); 
+      fetchSalespersonUsers(); 
+      const details = editingSalesperson.newPassword ? "Password changed" : "Profile updated";
+      logActivity("sales", editingSalesperson.email, editingSalesperson.name, "Updated", details); 
+    } catch { 
+      setError("Failed to update user"); 
+    } 
+    setIsLoading(false); 
+  };
+  
+  const deleteSalesperson = async (user: SalespersonUser) => { 
+    if (!confirm("Are you sure you want to delete " + user.name + "?")) return; 
+    try { 
+      await fetch("/api/superadmin/salespeople?id=" + user.id, { method: "DELETE" }); 
+      fetchSalespersonUsers(); 
+      logActivity("sales", user.email, user.name, "Deleted", "Salesperson account deleted"); 
+    } catch (err) { 
+      console.error("Failed to delete user:", err); 
+    } 
+  };
+  
+  const fetchActivityLogs = async () => { 
+    try { 
+      const res = await fetch("/api/superadmin/activity"); 
+      const data = await res.json(); 
+      setActivityLogs(data.logs || []); 
+    } catch (err) { 
+      console.error("Failed to fetch activity logs:", err); 
+    } 
+  };
+  
+  const logActivity = async (userType: string, userEmail: string, userName: string, action: string, details: string) => { 
+    try { 
+      await fetch("/api/superadmin/activity", { 
+        method: "POST", 
+        headers: { "Content-Type": "application/json" }, 
+        body: JSON.stringify({ user_type: userType, user_email: userEmail, user_name: userName, action, details }) 
+      }); 
+      fetchActivityLogs(); 
+    } catch (err) { 
+      console.error("Failed to log activity:", err); 
+    } 
+  };
+  
+  const formatDate = (dateStr: string | null) => { 
+    if (!dateStr) return "Never"; 
+    return new Date(dateStr).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" }); 
+  };
 
   if (!isAuthenticated) {
     return (
@@ -68,7 +300,6 @@ export default function SuperAdminPage() {
             <button type="submit" disabled={isLoading || !password} style={{ width: "100%", padding: "14px 24px", fontSize: 15, fontWeight: 600, background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer", opacity: isLoading || !password ? 0.6 : 1 }}>{isLoading ? "Authenticating..." : "Access Control Panel"}</button>
           </form>
           <div style={{ marginTop: 24, padding: 12, backgroundColor: "rgba(30, 41, 59, 0.5)", borderRadius: 8, border: "1px solid rgba(71, 85, 105, 0.3)" }}><p style={{ margin: 0, fontSize: 11, lineHeight: 1.5, color: "#64748b", textAlign: "center" }}>This system is for authorized personnel only. All access attempts are logged and monitored.</p></div>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 20, paddingTop: 16, borderTop: "1px solid rgba(255, 255, 255, 0.1)", color: "#64748b", fontSize: 12 }}>🛡️ This area is monitored</div>
         </div>
       </div>
     );
@@ -90,51 +321,57 @@ export default function SuperAdminPage() {
         </div>
       </div>
       <div style={{ maxWidth: 1400, margin: "0 auto", padding: 24 }}>
-        {activeTab === "admins" && (<>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-            <div style={{ display: "flex", gap: 16 }}>
-              <div style={{ display: "flex", alignItems: "center", backgroundColor: "#1e293b", borderRadius: 8, padding: "12px 16px" }}><span style={{ fontSize: 24, fontWeight: 700 }}>{adminUsers.length}</span><span style={{ fontSize: 12, color: "#94a3b8", marginLeft: 8 }}>Total</span></div>
-              <div style={{ display: "flex", alignItems: "center", backgroundColor: "#1e293b", borderRadius: 8, padding: "12px 16px" }}><span style={{ fontSize: 24, fontWeight: 700, color: "#22c55e" }}>{adminUsers.filter(u => u.is_active).length}</span><span style={{ fontSize: 12, color: "#94a3b8", marginLeft: 8 }}>Active</span></div>
-              <div style={{ display: "flex", alignItems: "center", backgroundColor: "#1e293b", borderRadius: 8, padding: "12px 16px" }}><span style={{ fontSize: 24, fontWeight: 700, color: "#ef4444" }}>{adminUsers.filter(u => !u.is_active).length}</span><span style={{ fontSize: 12, color: "#94a3b8", marginLeft: 8 }}>Inactive</span></div>
+        {activeTab === "admins" && (
+          <>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+              <div style={{ display: "flex", gap: 16 }}>
+                <div style={{ display: "flex", alignItems: "center", backgroundColor: "#1e293b", borderRadius: 8, padding: "12px 16px" }}><span style={{ fontSize: 24, fontWeight: 700 }}>{adminUsers.length}</span><span style={{ fontSize: 12, color: "#94a3b8", marginLeft: 8 }}>Total</span></div>
+                <div style={{ display: "flex", alignItems: "center", backgroundColor: "#1e293b", borderRadius: 8, padding: "12px 16px" }}><span style={{ fontSize: 24, fontWeight: 700, color: "#22c55e" }}>{adminUsers.filter(u => u.is_active).length}</span><span style={{ fontSize: 12, color: "#94a3b8", marginLeft: 8 }}>Active</span></div>
+                <div style={{ display: "flex", alignItems: "center", backgroundColor: "#1e293b", borderRadius: 8, padding: "12px 16px" }}><span style={{ fontSize: 24, fontWeight: 700, color: "#ef4444" }}>{adminUsers.filter(u => !u.is_active).length}</span><span style={{ fontSize: 12, color: "#94a3b8", marginLeft: 8 }}>Inactive</span></div>
+              </div>
+              <button onClick={() => setShowAdminModal(true)} style={{ padding: "10px 20px", backgroundColor: "#22c55e", color: "#fff", border: "none", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>➕ Add Admin</button>
             </div>
-            <button onClick={() => setShowAdminModal(true)} style={{ padding: "10px 20px", backgroundColor: "#22c55e", color: "#fff", border: "none", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>➕ Add Admin</button>
-          </div>
-          <div style={{ backgroundColor: "#1e293b", borderRadius: 12, overflow: "hidden" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
-              <thead><tr style={{ backgroundColor: "#334155" }}><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Status</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Name</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Email</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Role</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Last Login</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Actions</th></tr></thead>
-              <tbody>{adminUsers.map((user) => (<tr key={user.id} style={{ borderBottom: "1px solid #334155" }}><td style={{ padding: "14px 16px" }}><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: "50%", backgroundColor: user.is_active ? "#22c55e" : "#ef4444" }} /></td><td style={{ padding: "14px 16px" }}><strong>{user.name}</strong></td><td style={{ padding: "14px 16px" }}>{user.email}</td><td style={{ padding: "14px 16px" }}>{user.is_super_admin ? <span style={{ backgroundColor: "#eab30820", color: "#eab308", padding: "4px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600 }}>👑 Super Admin</span> : <span style={{ backgroundColor: "#dc262620", color: "#dc2626", padding: "4px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600 }}>Admin</span>}</td><td style={{ padding: "14px 16px" }}>{formatDate(user.last_login)}</td><td style={{ padding: "14px 16px" }}><div style={{ display: "flex", gap: 8 }}><button onClick={() => toggleAdminStatus(user)} disabled={user.is_super_admin} style={{ padding: "6px 12px", borderRadius: 6, border: "none", fontSize: 12, fontWeight: 600, cursor: "pointer", backgroundColor: user.is_active ? "#ef444420" : "#22c55e20", color: user.is_active ? "#ef4444" : "#22c55e" }}>{user.is_active ? "Deactivate" : "Activate"}</button><button onClick={() => { setEditingAdmin({...user, newPassword: ""}); setShowEditAdminModal(true); }} style={{ padding: "6px 12px", borderRadius: 6, border: "none", fontSize: 12, fontWeight: 600, cursor: "pointer", backgroundColor: "#3b82f620", color: "#3b82f6" }}>Edit</button>{!user.is_super_admin && <button onClick={() => deleteAdmin(user)} style={{ padding: "6px 12px", borderRadius: 6, border: "none", fontSize: 12, fontWeight: 600, cursor: "pointer", backgroundColor: "#ef444420", color: "#ef4444" }}>Delete</button>}</div></td></tr>))}</tbody>
-            </table>
-          </div>
-        </>)}
-        {activeTab === "salespeople" && (<>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-            <div style={{ display: "flex", gap: 16 }}>
-              <div style={{ display: "flex", alignItems: "center", backgroundColor: "#1e293b", borderRadius: 8, padding: "12px 16px" }}><span style={{ fontSize: 24, fontWeight: 700 }}>{salespersonUsers.length}</span><span style={{ fontSize: 12, color: "#94a3b8", marginLeft: 8 }}>Total</span></div>
-              <div style={{ display: "flex", alignItems: "center", backgroundColor: "#1e293b", borderRadius: 8, padding: "12px 16px" }}><span style={{ fontSize: 24, fontWeight: 700, color: "#22c55e" }}>{salespersonUsers.filter(u => u.is_active).length}</span><span style={{ fontSize: 12, color: "#94a3b8", marginLeft: 8 }}>Active</span></div>
-              <div style={{ display: "flex", alignItems: "center", backgroundColor: "#1e293b", borderRadius: 8, padding: "12px 16px" }}><span style={{ fontSize: 24, fontWeight: 700, color: "#ef4444" }}>{salespersonUsers.filter(u => !u.is_active).length}</span><span style={{ fontSize: 12, color: "#94a3b8", marginLeft: 8 }}>Inactive</span></div>
+            <div style={{ backgroundColor: "#1e293b", borderRadius: 12, overflow: "hidden" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+                <thead><tr style={{ backgroundColor: "#334155" }}><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Status</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Name</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Email</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Role</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Last Login</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Actions</th></tr></thead>
+                <tbody>{adminUsers.map((user) => (<tr key={user.id} style={{ borderBottom: "1px solid #334155" }}><td style={{ padding: "14px 16px" }}><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: "50%", backgroundColor: user.is_active ? "#22c55e" : "#ef4444" }} /></td><td style={{ padding: "14px 16px" }}><strong>{user.name}</strong></td><td style={{ padding: "14px 16px" }}>{user.email}</td><td style={{ padding: "14px 16px" }}>{user.is_super_admin ? <span style={{ backgroundColor: "#eab30820", color: "#eab308", padding: "4px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600 }}>👑 Super Admin</span> : <span style={{ backgroundColor: "#dc262620", color: "#dc2626", padding: "4px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600 }}>Admin</span>}</td><td style={{ padding: "14px 16px" }}>{formatDate(user.last_login)}</td><td style={{ padding: "14px 16px" }}><div style={{ display: "flex", gap: 8 }}><button onClick={() => toggleAdminStatus(user)} disabled={user.is_super_admin} style={{ padding: "6px 12px", borderRadius: 6, border: "none", fontSize: 12, fontWeight: 600, cursor: user.is_super_admin ? "not-allowed" : "pointer", backgroundColor: user.is_active ? "#ef444420" : "#22c55e20", color: user.is_active ? "#ef4444" : "#22c55e", opacity: user.is_super_admin ? 0.5 : 1 }}>{user.is_active ? "Deactivate" : "Activate"}</button><button onClick={() => { setEditingAdmin({...user, newPassword: ""}); setShowEditAdminModal(true); }} style={{ padding: "6px 12px", borderRadius: 6, border: "none", fontSize: 12, fontWeight: 600, cursor: "pointer", backgroundColor: "#3b82f620", color: "#3b82f6" }}>Edit</button>{!user.is_super_admin && <button onClick={() => deleteAdmin(user)} style={{ padding: "6px 12px", borderRadius: 6, border: "none", fontSize: 12, fontWeight: 600, cursor: "pointer", backgroundColor: "#ef444420", color: "#ef4444" }}>Delete</button>}</div></td></tr>))}</tbody>
+              </table>
             </div>
-            <button onClick={() => setShowSalespersonModal(true)} style={{ padding: "10px 20px", backgroundColor: "#22c55e", color: "#fff", border: "none", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>➕ Add Salesperson</button>
-          </div>
-          <div style={{ backgroundColor: "#1e293b", borderRadius: 12, overflow: "hidden" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
-              <thead><tr style={{ backgroundColor: "#334155" }}><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Status</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Name</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Title</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Email</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Phone</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Slug</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Last Login</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Actions</th></tr></thead>
-              <tbody>{salespersonUsers.map((user) => (<tr key={user.id} style={{ borderBottom: "1px solid #334155" }}><td style={{ padding: "14px 16px" }}><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: "50%", backgroundColor: user.is_active ? "#22c55e" : "#ef4444" }} /></td><td style={{ padding: "14px 16px" }}><strong>{user.name}</strong></td><td style={{ padding: "14px 16px" }}><span style={{ backgroundColor: "#3b82f620", color: "#3b82f6", padding: "4px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600 }}>{user.title}</span></td><td style={{ padding: "14px 16px" }}>{user.email}</td><td style={{ padding: "14px 16px" }}>{user.phone}</td><td style={{ padding: "14px 16px" }}><code style={{ backgroundColor: "#334155", padding: "2px 6px", borderRadius: 4, fontSize: 12 }}>/{user.slug}</code></td><td style={{ padding: "14px 16px" }}>{formatDate(user.last_login)}</td><td style={{ padding: "14px 16px" }}><div style={{ display: "flex", gap: 8 }}><button onClick={() => toggleSalespersonStatus(user)} style={{ padding: "6px 12px", borderRadius: 6, border: "none", fontSize: 12, fontWeight: 600, cursor: "pointer", backgroundColor: user.is_active ? "#ef444420" : "#22c55e20", color: user.is_active ? "#ef4444" : "#22c55e" }}>{user.is_active ? "Deactivate" : "Activate"}</button><button onClick={() => { setEditingSalesperson({...user, newPassword: ""}); setShowEditSalespersonModal(true); }} style={{ padding: "6px 12px", borderRadius: 6, border: "none", fontSize: 12, fontWeight: 600, cursor: "pointer", backgroundColor: "#3b82f620", color: "#3b82f6" }}>Edit</button><button onClick={() => deleteSalesperson(user)} style={{ padding: "6px 12px", borderRadius: 6, border: "none", fontSize: 12, fontWeight: 600, cursor: "pointer", backgroundColor: "#ef444420", color: "#ef4444" }}>Delete</button></div></td></tr>))}</tbody>
-            </table>
-          </div>
-        </>)}
-        {activeTab === "activity" && (<>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}><h2 style={{ margin: 0, fontSize: 18 }}>📋 Recent Activity</h2><button onClick={fetchActivityLogs} style={{ padding: "6px 12px", borderRadius: 6, border: "none", fontSize: 12, fontWeight: 600, cursor: "pointer", backgroundColor: "#3b82f620", color: "#3b82f6" }}>🔄 Refresh</button></div>
-          <div style={{ backgroundColor: "#1e293b", borderRadius: 12, overflow: "hidden" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
-              <thead><tr style={{ backgroundColor: "#334155" }}><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Time</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>User Type</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>User</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Action</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Details</th></tr></thead>
-              <tbody>{activityLogs.length === 0 ? <tr><td colSpan={5} style={{ padding: 40, textAlign: "center", color: "#64748b" }}>No activity logged yet</td></tr> : activityLogs.map((log) => (<tr key={log.id} style={{ borderBottom: "1px solid #334155" }}><td style={{ padding: "14px 16px" }}>{formatDate(log.created_at)}</td><td style={{ padding: "14px 16px" }}><span style={{ padding: "6px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600, backgroundColor: log.user_type === "admin" ? "#dc262620" : "#3b82f620", color: log.user_type === "admin" ? "#dc2626" : "#3b82f6" }}>{log.user_type === "admin" ? "🔐 Admin" : "👤 Sales"}</span></td><td style={{ padding: "14px 16px" }}><div><strong>{log.user_name}</strong><div style={{ fontSize: 12, color: "#64748b" }}>{log.user_email}</div></div></td><td style={{ padding: "14px 16px" }}><span style={{ padding: "4px 8px", borderRadius: 4, fontSize: 12, fontWeight: 600, backgroundColor: log.action === "Created" ? "#22c55e20" : log.action === "Deleted" ? "#ef444420" : log.action === "Deactivated" ? "#f59e0b20" : log.action === "Activated" ? "#22c55e20" : "#64748b20", color: log.action === "Created" ? "#22c55e" : log.action === "Deleted" ? "#ef4444" : log.action === "Deactivated" ? "#f59e0b" : log.action === "Activated" ? "#22c55e" : "#94a3b8" }}>{log.action}</span></td><td style={{ padding: "14px 16px" }}>{log.details}</td></tr>))}</tbody>
-            </table>
-          </div>
-        </>)}
+          </>
+        )}
+        {activeTab === "salespeople" && (
+          <>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+              <div style={{ display: "flex", gap: 16 }}>
+                <div style={{ display: "flex", alignItems: "center", backgroundColor: "#1e293b", borderRadius: 8, padding: "12px 16px" }}><span style={{ fontSize: 24, fontWeight: 700 }}>{salespersonUsers.length}</span><span style={{ fontSize: 12, color: "#94a3b8", marginLeft: 8 }}>Total</span></div>
+                <div style={{ display: "flex", alignItems: "center", backgroundColor: "#1e293b", borderRadius: 8, padding: "12px 16px" }}><span style={{ fontSize: 24, fontWeight: 700, color: "#22c55e" }}>{salespersonUsers.filter(u => u.is_active).length}</span><span style={{ fontSize: 12, color: "#94a3b8", marginLeft: 8 }}>Active</span></div>
+                <div style={{ display: "flex", alignItems: "center", backgroundColor: "#1e293b", borderRadius: 8, padding: "12px 16px" }}><span style={{ fontSize: 24, fontWeight: 700, color: "#ef4444" }}>{salespersonUsers.filter(u => !u.is_active).length}</span><span style={{ fontSize: 12, color: "#94a3b8", marginLeft: 8 }}>Inactive</span></div>
+              </div>
+              <button onClick={() => setShowSalespersonModal(true)} style={{ padding: "10px 20px", backgroundColor: "#22c55e", color: "#fff", border: "none", borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: "pointer" }}>➕ Add Salesperson</button>
+            </div>
+            <div style={{ backgroundColor: "#1e293b", borderRadius: 12, overflow: "hidden" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+                <thead><tr style={{ backgroundColor: "#334155" }}><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Status</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Name</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Title</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Email</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Phone</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Slug</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Last Login</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Actions</th></tr></thead>
+                <tbody>{salespersonUsers.map((user) => (<tr key={user.id} style={{ borderBottom: "1px solid #334155" }}><td style={{ padding: "14px 16px" }}><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: "50%", backgroundColor: user.is_active ? "#22c55e" : "#ef4444" }} /></td><td style={{ padding: "14px 16px" }}><strong>{user.name}</strong></td><td style={{ padding: "14px 16px" }}><span style={{ backgroundColor: "#3b82f620", color: "#3b82f6", padding: "4px 10px", borderRadius: 6, fontSize: 12, fontWeight: 600 }}>{user.title}</span></td><td style={{ padding: "14px 16px" }}>{user.email}</td><td style={{ padding: "14px 16px" }}>{user.phone}</td><td style={{ padding: "14px 16px" }}><code style={{ backgroundColor: "#334155", padding: "2px 6px", borderRadius: 4, fontSize: 12 }}>/{user.slug}</code></td><td style={{ padding: "14px 16px" }}>{formatDate(user.last_login)}</td><td style={{ padding: "14px 16px" }}><div style={{ display: "flex", gap: 8 }}><button onClick={() => toggleSalespersonStatus(user)} style={{ padding: "6px 12px", borderRadius: 6, border: "none", fontSize: 12, fontWeight: 600, cursor: "pointer", backgroundColor: user.is_active ? "#ef444420" : "#22c55e20", color: user.is_active ? "#ef4444" : "#22c55e" }}>{user.is_active ? "Deactivate" : "Activate"}</button><button onClick={() => { setEditingSalesperson({...user, newPassword: ""}); setShowEditSalespersonModal(true); }} style={{ padding: "6px 12px", borderRadius: 6, border: "none", fontSize: 12, fontWeight: 600, cursor: "pointer", backgroundColor: "#3b82f620", color: "#3b82f6" }}>Edit</button><button onClick={() => deleteSalesperson(user)} style={{ padding: "6px 12px", borderRadius: 6, border: "none", fontSize: 12, fontWeight: 600, cursor: "pointer", backgroundColor: "#ef444420", color: "#ef4444" }}>Delete</button></div></td></tr>))}</tbody>
+              </table>
+            </div>
+          </>
+        )}
+        {activeTab === "activity" && (
+          <>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}><h2 style={{ margin: 0, fontSize: 18 }}>📋 Recent Activity</h2><button onClick={fetchActivityLogs} style={{ padding: "6px 12px", borderRadius: 6, border: "none", fontSize: 12, fontWeight: 600, cursor: "pointer", backgroundColor: "#3b82f620", color: "#3b82f6" }}>🔄 Refresh</button></div>
+            <div style={{ backgroundColor: "#1e293b", borderRadius: 12, overflow: "hidden" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+                <thead><tr style={{ backgroundColor: "#334155" }}><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Time</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>User Type</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>User</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Action</th><th style={{ textAlign: "left", padding: "14px 16px", fontSize: 12, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase" }}>Details</th></tr></thead>
+                <tbody>{activityLogs.length === 0 ? <tr><td colSpan={5} style={{ padding: 40, textAlign: "center", color: "#64748b" }}>No activity logged yet</td></tr> : activityLogs.map((log) => (<tr key={log.id} style={{ borderBottom: "1px solid #334155" }}><td style={{ padding: "14px 16px" }}>{formatDate(log.created_at)}</td><td style={{ padding: "14px 16px" }}><span style={{ padding: "6px 12px", borderRadius: 6, fontSize: 12, fontWeight: 600, backgroundColor: log.user_type === "admin" ? "#dc262620" : "#3b82f620", color: log.user_type === "admin" ? "#dc2626" : "#3b82f6" }}>{log.user_type === "admin" ? "🔐 Admin" : "👤 Sales"}</span></td><td style={{ padding: "14px 16px" }}><div><strong>{log.user_name}</strong><div style={{ fontSize: 12, color: "#64748b" }}>{log.user_email}</div></div></td><td style={{ padding: "14px 16px" }}><span style={{ padding: "4px 8px", borderRadius: 4, fontSize: 12, fontWeight: 600, backgroundColor: log.action === "Created" ? "#22c55e20" : log.action === "Deleted" ? "#ef444420" : log.action === "Deactivated" ? "#f59e0b20" : log.action === "Activated" ? "#22c55e20" : "#64748b20", color: log.action === "Created" ? "#22c55e" : log.action === "Deleted" ? "#ef4444" : log.action === "Deactivated" ? "#f59e0b" : log.action === "Activated" ? "#22c55e" : "#94a3b8" }}>{log.action}</span></td><td style={{ padding: "14px 16px" }}>{log.details}</td></tr>))}</tbody>
+              </table>
+            </div>
+          </>
+        )}
       </div>
-      {showAdminModal && <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}><div style={{ backgroundColor: "#1e293b", borderRadius: 16, padding: 32, width: "100%", maxWidth: 450, border: "1px solid #334155" }}><h2 style={{ margin: "0 0 24px 0", fontSize: 20 }}>➕ Create New Admin</h2>{error && <div style={{ padding: "12px 16px", backgroundColor: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 8, marginBottom: 16, color: "#fca5a5", fontSize: 14 }}>{error}</div>}<form onSubmit={createAdmin}><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>Full Name</label><input type="text" value={newAdmin.name} onChange={(e) => setNewAdmin({...newAdmin, name: e.target.value})} placeholder="John Smith" style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }} required /></div><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>Email</label><input type="email" value={newAdmin.email} onChange={(e) => setNewAdmin({...newAdmin, email: e.target.value})} placeholder="john.s@gallatincdjr.com" style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }} required /></div><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>Password</label><input type="text" value={newAdmin.password} onChange={(e) => setNewAdmin({...newAdmin, password: e.target.value})} placeholder="SecurePassword123!" style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }} required /></div><div style={{ display: "flex", gap: 12, marginTop: 24 }}><button type="button" onClick={() => {setShowAdminModal(false); setError("");}} style={{ flex: 1, padding: "14px 24px", fontSize: 15, fontWeight: 600, backgroundColor: "#334155", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer" }}>Cancel</button><button type="submit" disabled={isLoading} style={{ flex: 1, padding: "14px 24px", fontSize: 15, fontWeight: 600, background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer" }}>{isLoading ? "Creating..." : "Create Admin"}</button></div></form></div></div>}
+      {showAdminModal && <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}><div style={{ backgroundColor: "#1e293b", borderRadius: 16, padding: 32, width: "100%", maxWidth: 450, border: "1px solid #334155" }}><h2 style={{ margin: "0 0 24px 0", fontSize: 20 }}>➕ Create New Admin</h2>{error && <div style={{ padding: "12px 16px", backgroundColor: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 8, marginBottom: 16, color: "#fca5a5", fontSize: 14 }}>{error}</div>}<form onSubmit={createAdmin}><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>Full Name</label><input type="text" value={newAdmin.name} onChange={(e) => setNewAdmin({...newAdmin, name: e.target.value})} placeholder="John Smith" style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }} required /></div><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>Email</label><input type="email" value={newAdmin.email} onChange={(e) => setNewAdmin({...newAdmin, email: e.target.value})} placeholder="john@gallatincdjr.com" style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }} required /></div><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>Password</label><input type="text" value={newAdmin.password} onChange={(e) => setNewAdmin({...newAdmin, password: e.target.value})} placeholder="SecurePassword123!" style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }} required /></div><div style={{ display: "flex", gap: 12, marginTop: 24 }}><button type="button" onClick={() => {setShowAdminModal(false); setError("");}} style={{ flex: 1, padding: "14px 24px", fontSize: 15, fontWeight: 600, backgroundColor: "#334155", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer" }}>Cancel</button><button type="submit" disabled={isLoading} style={{ flex: 1, padding: "14px 24px", fontSize: 15, fontWeight: 600, background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer" }}>{isLoading ? "Creating..." : "Create Admin"}</button></div></form></div></div>}
       {showEditAdminModal && editingAdmin && <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}><div style={{ backgroundColor: "#1e293b", borderRadius: 16, padding: 32, width: "100%", maxWidth: 450, border: "1px solid #334155" }}><h2 style={{ margin: "0 0 24px 0", fontSize: 20 }}>✏️ Edit Admin</h2><form onSubmit={updateAdmin}><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>Full Name</label><input type="text" value={editingAdmin.name} onChange={(e) => setEditingAdmin({...editingAdmin, name: e.target.value})} style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }} required /></div><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>Email</label><input type="email" value={editingAdmin.email} style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "#1e293b", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#64748b", outline: "none", boxSizing: "border-box" }} disabled /></div><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>New Password (leave blank to keep current)</label><input type="text" value={editingAdmin.newPassword || ""} onChange={(e) => setEditingAdmin({...editingAdmin, newPassword: e.target.value})} placeholder="Enter new password" style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }} /></div><div style={{ display: "flex", gap: 12, marginTop: 24 }}><button type="button" onClick={() => setShowEditAdminModal(false)} style={{ flex: 1, padding: "14px 24px", fontSize: 15, fontWeight: 600, backgroundColor: "#334155", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer" }}>Cancel</button><button type="submit" disabled={isLoading} style={{ flex: 1, padding: "14px 24px", fontSize: 15, fontWeight: 600, background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer" }}>{isLoading ? "Saving..." : "Save Changes"}</button></div></form></div></div>}
-      {showSalespersonModal && <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}><div style={{ backgroundColor: "#1e293b", borderRadius: 16, padding: 32, width: "100%", maxWidth: 550, border: "1px solid #334155" }}><h2 style={{ margin: "0 0 24px 0", fontSize: 20 }}>➕ Create New Salesperson</h2>{error && <div style={{ padding: "12px 16px", backgroundColor: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 8, marginBottom: 16, color: "#fca5a5", fontSize: 14 }}>{error}</div>}<form onSubmit={createSalesperson}><div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>Full Name</label><input type="text" value={newSalesperson.name} onChange={(e) => setNewSalesperson({...newSalesperson, name: e.target.value})} placeholder="John Smith" style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }} required /></div><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>Title</label><select value={newSalesperson.title} onChange={(e) => setNewSalesperson({...newSalesperson, title: e.target.value})} style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }}><option value="Product Specialist">Product Specialist</option><option value="Service To Sales Specialist">Service To Sales Specialist</option><option value="Fleet Manager">Fleet Manager</option><option value="Sales Manager">Sales Manager</option></select></div></div><div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>Email</label><input type="email" value={newSalesperson.email} onChange={(e) => setNewSalesperson({...newSalesperson, email: e.target.value})} placeholder="john.s@gallatincdjr.com" style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }} required /></div><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>Phone</label><input type="tel" value={newSalesperson.phone} onChange={(e) => setNewSalesperson({...newSalesperson, phone: e.target.value})} placeholder="615-555-0123" style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }} /></div></div><div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>Password</label><input type="text" value={newSalesperson.password} onChange={(e) => setNewSalesperson({...newSalesperson, password: e.target.value})} placeholder="GallatinCDJR2026!" style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }} required /></div><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>URL Slug</label><input type="text" value={newSalesperson.slug} onChange={(e) => setNewSalesperson({...newSalesperson, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "")})} placeholder="john" style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }} required /></div></div><div style={{ display: "flex", gap: 12, marginTop: 24 }}><button type="button" onClick={() => {setShowSalespersonModal(false); setError("");}} style={{ flex: 1, padding: "14px 24px", fontSize: 15, fontWeight: 600, backgroundColor: "#334155", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer" }}>Cancel</button><button type="submit" disabled={isLoading} style={{ flex: 1, padding: "14px 24px", fontSize: 15, fontWeight: 600, background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer" }}>{isLoading ? "Creating..." : "Create Salesperson"}</button></div></form></div></div>}
+      {showSalespersonModal && <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}><div style={{ backgroundColor: "#1e293b", borderRadius: 16, padding: 32, width: "100%", maxWidth: 550, border: "1px solid #334155" }}><h2 style={{ margin: "0 0 24px 0", fontSize: 20 }}>➕ Create New Salesperson</h2>{error && <div style={{ padding: "12px 16px", backgroundColor: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 8, marginBottom: 16, color: "#fca5a5", fontSize: 14 }}>{error}</div>}<form onSubmit={createSalesperson}><div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>Full Name</label><input type="text" value={newSalesperson.name} onChange={(e) => setNewSalesperson({...newSalesperson, name: e.target.value})} placeholder="John Smith" style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }} required /></div><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>Title</label><select value={newSalesperson.title} onChange={(e) => setNewSalesperson({...newSalesperson, title: e.target.value})} style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }}><option value="Product Specialist">Product Specialist</option><option value="Service To Sales Specialist">Service To Sales Specialist</option><option value="Fleet Manager">Fleet Manager</option><option value="Sales Manager">Sales Manager</option></select></div></div><div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>Email</label><input type="email" value={newSalesperson.email} onChange={(e) => setNewSalesperson({...newSalesperson, email: e.target.value})} placeholder="john@gallatincdjr.com" style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }} required /></div><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>Phone</label><input type="tel" value={newSalesperson.phone} onChange={(e) => setNewSalesperson({...newSalesperson, phone: e.target.value})} placeholder="615-555-0123" style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }} /></div></div><div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>Password</label><input type="text" value={newSalesperson.password} onChange={(e) => setNewSalesperson({...newSalesperson, password: e.target.value})} placeholder="GallatinCDJR2026!" style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }} required /></div><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>URL Slug</label><input type="text" value={newSalesperson.slug} onChange={(e) => setNewSalesperson({...newSalesperson, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "")})} placeholder="john" style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }} required /></div></div><div style={{ display: "flex", gap: 12, marginTop: 24 }}><button type="button" onClick={() => {setShowSalespersonModal(false); setError("");}} style={{ flex: 1, padding: "14px 24px", fontSize: 15, fontWeight: 600, backgroundColor: "#334155", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer" }}>Cancel</button><button type="submit" disabled={isLoading} style={{ flex: 1, padding: "14px 24px", fontSize: 15, fontWeight: 600, background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer" }}>{isLoading ? "Creating..." : "Create Salesperson"}</button></div></form></div></div>}
       {showEditSalespersonModal && editingSalesperson && <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(0,0,0,0.7)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}><div style={{ backgroundColor: "#1e293b", borderRadius: 16, padding: 32, width: "100%", maxWidth: 550, border: "1px solid #334155" }}><h2 style={{ margin: "0 0 24px 0", fontSize: 20 }}>✏️ Edit Salesperson</h2><form onSubmit={updateSalesperson}><div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>Full Name</label><input type="text" value={editingSalesperson.name} onChange={(e) => setEditingSalesperson({...editingSalesperson, name: e.target.value})} style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }} required /></div><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>Title</label><select value={editingSalesperson.title} onChange={(e) => setEditingSalesperson({...editingSalesperson, title: e.target.value})} style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }}><option value="Product Specialist">Product Specialist</option><option value="Service To Sales Specialist">Service To Sales Specialist</option><option value="Fleet Manager">Fleet Manager</option><option value="Sales Manager">Sales Manager</option></select></div></div><div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>Email</label><input type="email" value={editingSalesperson.email} style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "#1e293b", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#64748b", outline: "none", boxSizing: "border-box" }} disabled /></div><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>Phone</label><input type="tel" value={editingSalesperson.phone} onChange={(e) => setEditingSalesperson({...editingSalesperson, phone: e.target.value})} style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }} /></div></div><div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>New Password (leave blank to keep)</label><input type="text" value={editingSalesperson.newPassword || ""} onChange={(e) => setEditingSalesperson({...editingSalesperson, newPassword: e.target.value})} placeholder="Enter new password" style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }} /></div><div style={{ marginBottom: 16 }}><label style={{ color: "#e2e8f0", fontSize: 14, fontWeight: 600, display: "block", marginBottom: 8 }}>URL Slug</label><input type="text" value={editingSalesperson.slug} onChange={(e) => setEditingSalesperson({...editingSalesperson, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "")})} style={{ width: "100%", padding: "14px 16px", fontSize: 16, backgroundColor: "rgba(30,41,59,0.8)", border: "2px solid rgba(71,85,105,0.5)", borderRadius: 10, color: "#fff", outline: "none", boxSizing: "border-box" }} required /></div></div><div style={{ display: "flex", gap: 12, marginTop: 24 }}><button type="button" onClick={() => setShowEditSalespersonModal(false)} style={{ flex: 1, padding: "14px 24px", fontSize: 15, fontWeight: 600, backgroundColor: "#334155", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer" }}>Cancel</button><button type="submit" disabled={isLoading} style={{ flex: 1, padding: "14px 24px", fontSize: 15, fontWeight: 600, background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer" }}>{isLoading ? "Saving..." : "Save Changes"}</button></div></form></div></div>}
     </div>
   );
