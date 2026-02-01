@@ -50,7 +50,6 @@ export async function POST(request: NextRequest) {
 
     const normalizedEmail = email?.toLowerCase().trim();
 
-    // Handle forgot password with stricter rate limiting
     if (action === "forgot_password") {
       const rateLimitResult = await checkRateLimit(request, "passwordReset");
       if (!rateLimitResult.success) {
@@ -73,20 +72,17 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Handle logout - no rate limiting needed
     if (action === "logout") {
       const cookieStore = await cookies();
       cookieStore.delete("sales_session");
       return NextResponse.json({ success: true });
     }
 
-    // Rate limit login attempts
     const rateLimitResult = await checkRateLimit(request, "auth");
     if (!rateLimitResult.success) {
       return rateLimitResult.response;
     }
 
-    // Handle login
     const { data: user, error } = await supabaseServer
       .from("salesperson_users")
       .select("id, email, name, password, slug, is_active")
