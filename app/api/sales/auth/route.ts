@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabaseServer } from "@/lib/supabase";
 import { verifyPassword, isHashedPassword, hashPassword } from "@/lib/password";
+import { checkRateLimit } from "@/lib/ratelimit";
 
-// Email to receive password reset requests
 const ADMIN_NOTIFICATION_EMAIL = "robertlisowski57@gmail.com";
 
 async function sendPasswordResetEmail(userEmail: string, userName: string) {
@@ -15,44 +15,18 @@ async function sendPasswordResetEmail(userEmail: string, userName: string) {
   }
 
   try {
+    const timestamp = new Date().toLocaleString("en-US", { timeZone: "America/Chicago" });
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${resendApiKey}`,
+        "Authorization": "Bearer " + resendApiKey,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         from: "Gallatin CDJR Admin <admin@gallatincdjr.reviews>",
         to: [ADMIN_NOTIFICATION_EMAIL],
-        subject: `🔐 Salesperson Password Reset Request - ${userName}`,
-        html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-            <div style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 24px;">🔐 Salesperson Password Reset</h1>
-            </div>
-            
-            <div style="background: #f8fafc; padding: 30px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 12px 12px;">
-              <p style="font-size: 16px; color: #334155; margin-bottom: 20px;">
-                A salesperson has requested a password reset:
-              </p>
-              
-              <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
-                <p style="margin: 0 0 10px 0;"><strong>Name:</strong> ${userName}</p>
-                <p style="margin: 0 0 10px 0;"><strong>Email:</strong> ${userEmail}</p>
-                <p style="margin: 0;"><strong>Time:</strong> ${new Date().toLocaleString("en-US", { timeZone: "America/Chicago" })} CT</p>
-              </div>
-              
-              <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">
-                To reset this user's password, go to the Super Admin panel at:<br>
-                <a href="https://gallatincdjr.reviews/superadmin" style="color: #3b82f6;">https://gallatincdjr.reviews/superadmin</a>
-              </p>
-            </div>
-            
-            <p style="text-align: center; font-size: 12px; color: #94a3b8; margin-top: 20px;">
-              Gallatin CDJR Sales Dashboard • Part of the WE Auto Family
-            </p>
-          </div>
-        `,
+        subject: "🔐 Salesperson Password Reset Request - " + userName,
+        html: "<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;\"><div style=\"background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); padding: 30px; border-radius: 12px 12px 0 0; text-align: center;\"><h1 style=\"color: white; margin: 0; font-size: 24px;\">🔐 Salesperson Password Reset</h1></div><div style=\"background: #f8fafc; padding: 30px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 12px 12px;\"><p style=\"font-size: 16px; color: #334155; margin-bottom: 20px;\">A salesperson has requested a password reset:</p><div style=\"background: white; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;\"><p style=\"margin: 0 0 10px 0;\"><strong>Name:</strong> " + userName + "</p><p style=\"margin: 0 0 10px 0;\"><strong>Email:</strong> " + userEmail + "</p><p style=\"margin: 0;\"><strong>Time:</strong> " + timestamp + " CT</p></div><p style=\"font-size: 14px; color: #64748b; margin-bottom: 20px;\">To reset this user's password, go to the Super Admin panel at:<br><a href=\"https://gallatincdjr.reviews/superadmin\" style=\"color: #3b82f6;\">https://gallatincdjr.reviews/superadmin</a></p></div><p style=\"text-align: center; font-size: 12px; color: #94a3b8; margin-top: 20px;\">Gallatin CDJR Sales Dashboard • Part of the WE Auto Family</p></div>",
       }),
     });
 
@@ -76,8 +50,13 @@ export async function POST(request: NextRequest) {
 
     const normalizedEmail = email?.toLowerCase().trim();
 
-    // Handle forgot password
+    // Handle forgot password with stricter rate limiting
     if (action === "forgot_password") {
+      const rateLimitResult = await checkRateLimit(request, "passwordReset");
+      if (!rateLimitResult.success) {
+        return rateLimitResult.response;
+      }
+
       const { data: user } = await supabaseServer
         .from("salesperson_users")
         .select("name, email, is_active")
@@ -94,11 +73,17 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Handle logout
+    // Handle logout - no rate limiting needed
     if (action === "logout") {
       const cookieStore = await cookies();
       cookieStore.delete("sales_session");
       return NextResponse.json({ success: true });
+    }
+
+    // Rate limit login attempts
+    const rateLimitResult = await checkRateLimit(request, "auth");
+    if (!rateLimitResult.success) {
+      return rateLimitResult.response;
     }
 
     // Handle login
@@ -115,7 +100,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user is active
     if (!user.is_active) {
       return NextResponse.json(
         { success: false, error: "Your account has been deactivated. Please contact a manager." },
@@ -123,24 +107,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check password - support both hashed and legacy plain text passwords
     let passwordValid = false;
     
     if (isHashedPassword(user.password)) {
-      // New hashed password - verify with bcrypt
       passwordValid = await verifyPassword(password, user.password);
     } else {
-      // Legacy plain text password - check directly
       passwordValid = user.password === password;
       
-      // If valid, migrate to hashed password
       if (passwordValid) {
         const hashedPassword = await hashPassword(password);
         await supabaseServer
           .from("salesperson_users")
           .update({ password: hashedPassword })
           .eq("id", user.id);
-        console.log(`Migrated password to hash for salesperson: ${normalizedEmail}`);
+        console.log("Migrated password to hash for salesperson: " + normalizedEmail);
       }
     }
 
@@ -151,13 +131,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Update last login
     await supabaseServer
       .from("salesperson_users")
       .update({ last_login: new Date().toISOString() })
       .eq("id", user.id);
 
-    // Create session token
     const sessionData = {
       id: user.id,
       email: normalizedEmail,
@@ -167,13 +145,12 @@ export async function POST(request: NextRequest) {
     };
     const sessionToken = Buffer.from(JSON.stringify(sessionData)).toString("base64");
 
-    // Set cookie
     const cookieStore = await cookies();
     cookieStore.set("sales_session", sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 60 * 60 * 24, // 24 hours
+      maxAge: 60 * 60 * 24,
       path: "/",
     });
 
@@ -195,7 +172,6 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET() {
-  // Check if user is logged in and return user info
   try {
     const cookieStore = await cookies();
     const session = cookieStore.get("sales_session");
@@ -203,7 +179,6 @@ export async function GET() {
     if (session?.value) {
       const sessionData = JSON.parse(Buffer.from(session.value, "base64").toString());
       
-      // Verify session is not expired (24 hours)
       if (Date.now() - sessionData.timestamp > 24 * 60 * 60 * 1000) {
         return NextResponse.json({ authenticated: false });
       }
