@@ -1,25 +1,123 @@
 {
-  "name": "Gallatin CDJR",
+  "name": "Gallatin CDJR Reviews",
   "short_name": "Gallatin CDJR",
-  "description": "Your personal connection to Gallatin Chrysler Dodge Jeep RAM",
+  "description": "Customer reviews and sales performance tracking for Gallatin CDJR",
   "start_url": "/",
+  "id": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#0f0f0f",
-  "theme_color": "#D10000",
-  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#dc2626",
+  "orientation": "portrait-primary",
+  "categories": ["business", "productivity"],
   "icons": [
     {
-      "src": "https://res.cloudinary.com/di5ujiwjp/image/upload/w_192,h_192,c_fill/v1769874514/Gallatin_CDJR_App_Icon_xt3irp.png",
-      "sizes": "192x192",
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "https://res.cloudinary.com/di5ujiwjp/image/upload/w_512,h_512,c_fill/v1769874514/Gallatin_CDJR_App_Icon_xt3irp.png",
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
-  "categories": ["auto", "lifestyle", "shopping"]
+  "shortcuts": [
+    {
+      "name": "Sales Dashboard",
+      "short_name": "Sales",
+      "description": "View your sales performance",
+      "url": "/sales",
+      "icons": [{ "src": "/icons/shortcut-sales.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Admin Dashboard",
+      "short_name": "Admin",
+      "description": "Manage reviews and tracking",
+      "url": "/admin",
+      "icons": [{ "src": "/icons/shortcut-admin.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "TV Display",
+      "short_name": "TV",
+      "description": "Leaderboard display",
+      "url": "/tv",
+      "icons": [{ "src": "/icons/shortcut-tv.png", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/sales-dashboard.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Sales Dashboard"
+    },
+    {
+      "src": "/screenshots/review-page.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Customer Review Page"
+    },
+    {
+      "src": "/screenshots/admin-desktop.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Admin Dashboard"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
 }
