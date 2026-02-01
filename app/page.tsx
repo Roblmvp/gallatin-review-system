@@ -14,7 +14,6 @@ export default function Home() {
       <div style={{ display: "flex", flexDirection: "column", gap: 16, width: "100%", maxWidth: 300 }}>
         <Link href="/sales" style={{ display: "block", padding: "16px 24px", fontSize: 16, fontWeight: 600, background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)", color: "#fff", borderRadius: 12, textDecoration: "none", textAlign: "center" }}>Sales Dashboard</Link>
         <Link href="/admin" style={{ display: "block", padding: "16px 24px", fontSize: 16, fontWeight: 600, background: "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)", color: "#fff", borderRadius: 12, textDecoration: "none", textAlign: "center" }}>Admin Dashboard</Link>
-        <Link href="/tv" style={{ display: "block", padding: "16px 24px", fontSize: 16, fontWeight: 600, background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)", color: "#fff", borderRadius: 12, textDecoration: "none", textAlign: "center" }}>TV Leaderboard</Link>
       </div>
       <p style={{ marginTop: 48, fontSize: 13, color: "#64748b" }}>Part of the WE Auto Family</p>
     </div>
