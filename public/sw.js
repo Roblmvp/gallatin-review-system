@@ -10,7 +10,6 @@ const PRECACHE_ASSETS = [
   '/icons/icon-512x512.png'
 ];
 
-// Install event - precache assets
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
@@ -21,7 +20,6 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Activate event - clean old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
@@ -38,24 +36,17 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch event - network first, fallback to cache
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip non-GET requests
   if (request.method !== 'GET') return;
-
-  // Skip API requests (always go to network)
   if (url.pathname.startsWith('/api/')) return;
-
-  // Skip external requests
   if (url.origin !== self.location.origin) return;
 
   event.respondWith(
     fetch(request)
       .then((response) => {
-        // Clone and cache successful responses
         if (response.status === 200) {
           const responseClone = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
@@ -65,12 +56,10 @@ self.addEventListener('fetch', (event) => {
         return response;
       })
       .catch(async () => {
-        // Try cache on network failure
         const cachedResponse = await caches.match(request);
         if (cachedResponse) {
           return cachedResponse;
         }
-        // Return offline page for navigation requests
         if (request.mode === 'navigate') {
           return caches.match(OFFLINE_URL);
         }
@@ -79,7 +68,6 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Push notification event
 self.addEventListener('push', (event) => {
   if (!event.data) return;
 
@@ -89,9 +77,7 @@ self.addEventListener('push', (event) => {
     icon: '/icons/icon-192x192.png',
     badge: '/icons/badge-72x72.png',
     vibrate: [100, 50, 100],
-    data: {
-      url: data.url || '/'
-    },
+    data: { url: data.url || '/' },
     actions: data.actions || []
   };
 
@@ -100,22 +86,18 @@ self.addEventListener('push', (event) => {
   );
 });
 
-// Notification click event
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-
   const url = event.notification.data?.url || '/';
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-      // Focus existing window if available
       for (const client of clientList) {
         if (client.url.includes(self.location.origin) && 'focus' in client) {
           client.navigate(url);
           return client.focus();
         }
       }
-      // Open new window
       return clients.openWindow(url);
     })
   );
