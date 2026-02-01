@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabaseServer } from "@/lib/supabase";
+import { hashPassword, verifyPassword, isHashedPassword } from "@/lib/password";
 
 // Super admin password - set this in environment variables
 const SUPER_ADMIN_PASSWORD = process.env.SUPER_ADMIN_PASSWORD || "SuperAdmin2026!";
@@ -83,18 +84,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Create new user
+    // Create new user with HASHED password
     if (action === "create") {
       if (!email || !name || !password) {
         return NextResponse.json({ error: "Email, name, and password are required" }, { status: 400 });
       }
+
+      // Hash the password before storing
+      const hashedPassword = await hashPassword(password);
 
       const { data, error } = await supabaseServer
         .from("admin_users")
         .insert({
           email: email.toLowerCase().trim(),
           name,
-          password,
+          password: hashedPassword,
           is_active: true,
           is_super_admin: false,
           created_by: "Super Admin",
@@ -144,8 +148,12 @@ export async function PATCH(request: NextRequest) {
 
     const updates: Record<string, any> = {};
     if (typeof is_active === "boolean") updates.is_active = is_active;
-    if (password) updates.password = password;
     if (name) updates.name = name;
+    
+    // Hash password if provided
+    if (password) {
+      updates.password = await hashPassword(password);
+    }
 
     if (Object.keys(updates).length === 0) {
       return NextResponse.json({ error: "No updates provided" }, { status: 400 });
