@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabaseServer } from "@/lib/supabase";
+import { verifyPassword, isHashedPassword, hashPassword } from "@/lib/password";
 
 // Email to receive password reset requests
 const ADMIN_NOTIFICATION_EMAIL = "robertlisowski57@gmail.com";
@@ -122,8 +123,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check password
-    if (user.password !== password) {
+    // Check password - support both hashed and legacy plain text passwords
+    let passwordValid = false;
+    
+    if (isHashedPassword(user.password)) {
+      // New hashed password - verify with bcrypt
+      passwordValid = await verifyPassword(password, user.password);
+    } else {
+      // Legacy plain text password - check directly
+      passwordValid = user.password === password;
+      
+      // If valid, migrate to hashed password
+      if (passwordValid) {
+        const hashedPassword = await hashPassword(password);
+        await supabaseServer
+          .from("salesperson_users")
+          .update({ password: hashedPassword })
+          .eq("id", user.id);
+        console.log(`Migrated password to hash for salesperson: ${normalizedEmail}`);
+      }
+    }
+
+    if (!passwordValid) {
       return NextResponse.json(
         { success: false, error: "Invalid email or password" },
         { status: 401 }
