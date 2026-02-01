@@ -11,6 +11,7 @@ type Props = {
 export default function AdminLoginForm({ onLogin, onForgotPassword, error }: Props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
@@ -204,7 +205,7 @@ export default function AdminLoginForm({ onLogin, onForgotPassword, error }: Pro
             <label style={styles.label}>Password</label>
             <div style={styles.inputWrapper}>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
@@ -212,7 +213,24 @@ export default function AdminLoginForm({ onLogin, onForgotPassword, error }: Pro
                 className="login-input"
                 autoComplete="current-password"
               />
-              <span style={styles.inputIcon}>🔒</span>
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={styles.eyeButton}
+                tabIndex={-1}
+              >
+                {showPassword ? (
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                ) : (
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                )}
+              </button>
             </div>
           </div>
 
@@ -244,6 +262,13 @@ export default function AdminLoginForm({ onLogin, onForgotPassword, error }: Pro
             Forgot your password?
           </button>
         </form>
+
+        {/* Legal Disclosure */}
+        <div style={styles.disclosure}>
+          <p style={styles.disclosureText}>
+            By signing in, you acknowledge that you are an authorized user and agree to comply with all company policies regarding the handling of confidential business information. Unauthorized access or disclosure of proprietary data, including but not limited to sales figures, customer information, and financial metrics, is strictly prohibited and may result in disciplinary action and/or legal prosecution. All activity is monitored and logged.
+          </p>
+        </div>
 
         {/* Security Note */}
         <div style={styles.securityNote}>
@@ -419,6 +444,22 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: 20,
     opacity: 0.4,
   },
+  eyeButton: {
+    position: "absolute",
+    right: 14,
+    top: "50%",
+    transform: "translateY(-50%)",
+    background: "none",
+    border: "none",
+    color: "#64748b",
+    cursor: "pointer",
+    padding: 4,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    opacity: 0.6,
+    transition: "opacity 0.2s",
+  },
   primaryButton: {
     display: "flex",
     alignItems: "center",
@@ -465,11 +506,25 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: "center",
     justifyContent: "center",
     gap: 10,
-    marginTop: 28,
-    paddingTop: 24,
+    marginTop: 20,
+    paddingTop: 20,
     borderTop: "1px solid rgba(255, 255, 255, 0.08)",
     color: "#64748b",
     fontSize: 13,
+  },
+  disclosure: {
+    marginTop: 24,
+    padding: "16px",
+    backgroundColor: "rgba(30, 41, 59, 0.5)",
+    borderRadius: 10,
+    border: "1px solid rgba(71, 85, 105, 0.3)",
+  },
+  disclosureText: {
+    margin: 0,
+    fontSize: 11,
+    lineHeight: 1.5,
+    color: "#64748b",
+    textAlign: "center",
   },
   securityIcon: {
     fontSize: 15,
