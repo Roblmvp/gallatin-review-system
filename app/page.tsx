@@ -34,6 +34,15 @@ export default function FullCircleLandingPage() {
           background: rgba(255,255,255,0.1);
           transform: translateY(-3px);
         }
+        .fc-card {
+          background: #fff; border: 1px solid #e2e8f0;
+          border-radius: 16px; padding: 28px;
+          transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .fc-card:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+        }
         .section-title {
           font-size: 40px; font-weight: 800;
           letter-spacing: -1.5px; color: #0f172a;
@@ -153,7 +162,7 @@ export default function FullCircleLandingPage() {
               { icon: "🤝", title: "Referral System Built In", desc: "Customers can refer friends through the same link. Track referral sources and reward your best advocates." },
               { icon: "📈", title: "Manager Dashboard", desc: "Daily, weekly, and monthly metrics at a glance. See which reps are crushing it and who needs a nudge." },
             ].map((f, i) => (
-              <div key={i} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 16, padding: 28, transition: "transform 0.2s, box-shadow 0.2s" }} onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-3px)"; e.currentTarget.style.boxShadow = "0 12px 32px rgba(0,0,0,0.08)"; }} onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}>
+              <div key={i} className="fc-card">
                 <div style={{ fontSize: 32, marginBottom: 16 }}>{f.icon}</div>
                 <h3 style={{ fontSize: 18, fontWeight: 700, color: "#0f172a", marginBottom: 8 }}>{f.title}</h3>
                 <p style={{ fontSize: 14, color: "#64748b", lineHeight: 1.7 }}>{f.desc}</p>
